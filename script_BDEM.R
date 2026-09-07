@@ -83,10 +83,27 @@ summary(dados_sim_2$IDADE)
 # Ao terminar a Tarefa 4 commit com a mensagem "script BDEM - SIM - tarefas 1 a 4" e envie para o repositório Projeto_BDEM_2016
 
 
-# Tarefa 5. Atribuir para cada variável de dados_sim_2 como sendo NA a categoria de "Não informado ou Ignorado", 
+# Tarefa 5. Atribuir para cada variável de dados_sim_2 como sendo NA a categoria de "Não informado ou Ignorado",
 # geralmente com código 9
 # Verifique o dicionário do SIM para identificar qual o código das categorias de cada variável
 # Em variáveis quantitativas como IDADE verificar se existem valores como 9999 para NA
+
+dados_sim_2$SEXO[dados_sim_2$SEXO %in% c(0, 9)] = NA
+dados_sim_2$RACACOR[dados_sim_2$RACACOR == 9] = NA
+dados_sim_2$ESC2010[dados_sim_2$ESC2010 == 9] = NA
+dados_sim_2$TPMORTEOCO[dados_sim_2$TPMORTEOCO == 9] = NA
+dados_sim_2$CAUSABAS[dados_sim_2$CAUSABAS == "" | dados_sim_2$CAUSABAS == "9"] = NA
+
+# IDADE: quantidade "99" (2 últimos dígitos) indica ignorado dentro de cada unidade
+idade_chr = formatC(dados_sim_2$IDADE, width = 3, flag = "0")
+dados_sim_2$IDADE[substr(idade_chr, 2, 3) == "99"] = NA
+
+# conferência após a limpeza
+table(dados_sim_2$SEXO, useNA = "always")
+table(dados_sim_2$RACACOR, useNA = "always")
+table(dados_sim_2$ESC2010, useNA = "always")
+table(dados_sim_2$TPMORTEOCO, useNA = "always")
+summary(dados_sim_2$IDADE)
 
 
 # Ao terminar a Tarefa 5 commit com a mensagem "script BDEM - SIM - tarefas 1 a 5" e envie para o repositório Projeto_BDEM_2016
