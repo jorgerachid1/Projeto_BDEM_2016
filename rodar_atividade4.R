@@ -1,34 +1,13 @@
-# Atividade 4 - roda tudo (copia arquivos, descompacta, commits e branch SIM)
+# Atividade 4 - commits e branch SIM
 # UF de trabalho: 27 (Alagoas)
 
 library(gert)
 
 repo <- "C:/Users/Jorge/OneDrive/Documentos/Projeto_BDEM_2016"
-downloads <- file.path(Sys.getenv("USERPROFILE"), "Downloads")
 
 commit_se_houver <- function(msg) {
   if (nrow(git_status(repo = repo, staged = TRUE)) > 0) git_commit(msg, repo = repo)
 }
-
-arquivos <- c(
-  "script_roteiro_BDEM.R", "SINASC_2016.zip",
-  "Tabela_PIG_Brasil.csv",
-  "Variáveis - Projeto - Tarefa 3 - SINISA.pdf",
-  "Variáveis - Projeto - Tarefa 4 - SIDRA.pdf",
-  "Variáveis - Projeto - Tarefa 9 - SINASC.pdf",
-  "Dicionário - SIM - Open DATASUS.pdf",
-  "Dicionário - SINASC - Open DATASUS.pdf"
-)
-
-for (arq in arquivos) {
-  origem <- file.path(downloads, arq)
-  if (file.exists(origem)) file.copy(origem, file.path(repo, arq), overwrite = TRUE)
-}
-
-unzip(file.path(downloads, "SIM_2016.zip"), exdir = repo, overwrite = TRUE)
-
-sinasc_zip <- file.path(downloads, "SINASC_2016.zip")
-if (file.exists(sinasc_zip)) unzip(sinasc_zip, exdir = repo, overwrite = TRUE)
 
 # csv grande (>90MB) precisa de git lfs, senão o GitHub recusa o push
 csvs <- list.files(repo, pattern = "\\.csv$", full.names = TRUE)
@@ -56,9 +35,9 @@ if ("SIM" %in% git_branch_list(repo = repo)$name) {
 }
 
 # monta o script_BDEM.R com o código até a tarefa N e commita
-roteiro <- readLines(file.path(repo, "script_roteiro_BDEM.R"), encoding = "UTF-8")
+roteiro <- readLines(file.path(repo, "script_roteiro_BDEM.R"), encoding = "UTF-8", warn = FALSE)
 Encoding(roteiro) <- "UTF-8"
-pronto <- readLines(file.path(downloads, "script_BDEM.R"), encoding = "UTF-8")
+pronto <- readLines(file.path(repo, "script_BDEM_gabarito.R"), encoding = "UTF-8", warn = FALSE)
 Encoding(pronto) <- "UTF-8"
 
 marco <- function(linhas, tarefa) grep(sprintf("Ao terminar a Tarefa %d commit", tarefa), linhas)[1]
