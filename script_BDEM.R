@@ -67,6 +67,18 @@ nrow(dados_sim_2)   # deve dar 20769, conforme a tabela de conferência acima (U
 # Atenção: a unidade de medida de IDADE no DICIONÀRIO do SIM está errada
 # O propósito das avaliações acima é verificar se as categorias estão de acordo com o dicionário do SIM ou se aparecem categorias estranhas
 
+table(dados_sim_2$TIPOBITO, useNA = "always")
+table(dados_sim_2$SEXO, useNA = "always")
+table(dados_sim_2$RACACOR, useNA = "always")
+table(dados_sim_2$ESC2010, useNA = "always")
+table(dados_sim_2$TPMORTEOCO, useNA = "always")
+table(dados_sim_2$CAUSABAS, useNA = "always")
+
+# IDADE: 1º dígito = unidade (0,1,2,3,4,5 - ver acima); 2 últimos dígitos = quantidade
+idade_chr = formatC(dados_sim_2$IDADE, width = 3, flag = "0")
+table(substr(idade_chr, 1, 1), useNA = "always")     # frequência das unidades de medida
+summary(dados_sim_2$IDADE)
+
 
 # Ao terminar a Tarefa 4 commit com a mensagem "script BDEM - SIM - tarefas 1 a 4" e envie para o repositório Projeto_BDEM_2016
 
