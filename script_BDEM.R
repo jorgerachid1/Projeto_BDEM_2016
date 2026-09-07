@@ -10,11 +10,16 @@
 ##################################
 # ETAPA 1: BANCO DE DADOS DO SIM
 ##################################
-# Você deve criar e estar na branch SIM antes de inserir os comandos 
+# Você deve criar e estar na branch SIM antes de inserir os comandos
 # NÃO altere as linhas de qualquer outra ETAPA do script e nem do cabeçalho
 
 # Tarefa 1. Leitura do banco de dados SIM_2016 com 1309774 linhas e 87 colunas com o nome de dados_sim
 # Verificar se a leitura foi feita corretamente e a estrutura dos dados
+
+dados_sim = read.csv("SIM_2016.csv", sep = ";", encoding = "latin1")
+# Se a leitura não resultar em 1309774 linhas e 87 colunas, tente sep = ";" e/ou encoding = "latin1"
+dim(dados_sim)          # deve ser 1309774  87
+str(dados_sim)
 
 
 # Ao terminar a Tarefa 1 commit com a mensagem "script BDEM - SIM - tarefa 1" e envie para o repositório Projeto_BDEM_2016
