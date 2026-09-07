@@ -51,7 +51,7 @@ commit_tarefa <- function(tarefa, msg) {
 }
 
 # Tarefa 1
-dados_sim <- read.csv(file.path(repo, "SIM_2016.csv"), sep = ",", encoding = "UTF-8")
+dados_sim <- read.csv(file.path(repo, "SIM_2016.csv"), sep = ";", encoding = "latin1")
 dim(dados_sim)
 commit_tarefa(1, "script BDEM - SIM - tarefa 1")
 
