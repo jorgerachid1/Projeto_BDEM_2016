@@ -145,9 +145,7 @@ str(dados_sim_2)
 # Atenção: a ordem das variáveis do arquivo deve ser respeitada
 
 # TORC: registro completo (sem NA) nas 87 variáveis originais do SIM_2016.csv, refeito o filtro da UF sobre dados_sim (não sobre dados_sim_2)
-dados_sim$UF = substr(as.character(dados_sim$CODMUNRES), 1, 2)
-dados_sim_full_2 = dados_sim[dados_sim$UF == "27", ]
-dados_sim_full_2$UF = NULL
+dados_sim_full_2 = dados_sim[substr(as.character(dados_sim$CODMUNRES), 1, 2) == "27", ]
 
 # idade em dias (unidade 0/1 = minutos/horas -> < 1 dia; 2 = dias; 3 = meses -> dias aproximados) para as faixas neonatais
 idade_chr = formatC(dados_sim_2$IDADE, width = 3, flag = "0")
