@@ -10,11 +10,16 @@
 ##################################
 # ETAPA 1: BANCO DE DADOS DO SIM
 ##################################
-# Você deve criar e estar na branch SIM antes de inserir os comandos 
+# Você deve criar e estar na branch SIM antes de inserir os comandos
 # NÃO altere as linhas de qualquer outra ETAPA do script e nem do cabeçalho
 
 # Tarefa 1. Leitura do banco de dados SIM_2016 com 1309774 linhas e 87 colunas com o nome de dados_sim
 # Verificar se a leitura foi feita corretamente e a estrutura dos dados
+
+dados_sim = read.csv("SIM_2016.csv", sep = ";", encoding = "latin1")
+# Se a leitura não resultar em 1309774 linhas e 87 colunas, tente sep = ";" e/ou encoding = "latin1"
+dim(dados_sim)          # deve ser 1309774  87
+str(dados_sim)
 
 
 # Ao terminar a Tarefa 1 commit com a mensagem "script BDEM - SIM - tarefa 1" e envie para o repositório Projeto_BDEM_2016
@@ -23,6 +28,11 @@
 # Tarefa 2. Reduzir dados_sim apenas para as colunas que serão utilizadas, nomeando este novo banco de dados como dados_sim_1
 # As colunas serão: 1, 3, 9, 10, 11, 14, 17, 35, 47
 # Nomes das respectivas variáveis: CONTADOR, TIPOBITO, IDADE, SEXO, RACACOR, ESC2010, CODMUNRES, TPMORTEOCO, CAUSABAS
+
+dados_sim_1 = dados_sim[, c(1, 3, 9, 10, 11, 14, 17, 35, 47)]
+names(dados_sim_1) = c("CONTADOR", "TIPOBITO", "IDADE", "SEXO", "RACACOR",
+                        "ESC2010", "CODMUNRES", "TPMORTEOCO", "CAUSABAS")
+str(dados_sim_1)
 
 
 # Ao terminar a Tarefa 2 commit com a mensagem "script BDEM - SIM - tarefas 1 a 2" e envie para o repositório Projeto_BDEM_2016
@@ -38,7 +48,13 @@
 # 21:34362     22:19187    23:54276    24:21922     25:28041     26:66928    27:20769    28:13516     29:88094
 # 31:135257    32:22868    33:141089   35:296359
 # 41:74740     42:40270    43:87583
-# 50:16749     51:17535    52:38074    53:12050 
+# 50:16749     51:17535    52:38074    53:12050
+
+# Aluno responsável pela UF 27 (Alagoas - AL)
+dados_sim_1$UF = substr(as.character(dados_sim_1$CODMUNRES), 1, 2)
+dados_sim_2 = dados_sim_1[dados_sim_1$UF == "27", ]
+dados_sim_2$UF = NULL
+nrow(dados_sim_2)   # deve dar 20769, conforme a tabela de conferência acima (UF 27 - AL)
 
 
 # Ao terminar a Tarefa 3 commit com a mensagem "script BDEM - SIM - tarefas 1 a 3" e envie para o repositório Projeto_BDEM_2016
@@ -51,14 +67,43 @@
 # Atenção: a unidade de medida de IDADE no DICIONÀRIO do SIM está errada
 # O propósito das avaliações acima é verificar se as categorias estão de acordo com o dicionário do SIM ou se aparecem categorias estranhas
 
+table(dados_sim_2$TIPOBITO, useNA = "always")
+table(dados_sim_2$SEXO, useNA = "always")
+table(dados_sim_2$RACACOR, useNA = "always")
+table(dados_sim_2$ESC2010, useNA = "always")
+table(dados_sim_2$TPMORTEOCO, useNA = "always")
+table(dados_sim_2$CAUSABAS, useNA = "always")
+
+# IDADE: 1º dígito = unidade (0,1,2,3,4,5 - ver acima); 2 últimos dígitos = quantidade
+idade_chr = formatC(dados_sim_2$IDADE, width = 3, flag = "0")
+table(substr(idade_chr, 1, 1), useNA = "always")     # frequência das unidades de medida
+summary(dados_sim_2$IDADE)
+
 
 # Ao terminar a Tarefa 4 commit com a mensagem "script BDEM - SIM - tarefas 1 a 4" e envie para o repositório Projeto_BDEM_2016
 
 
-# Tarefa 5. Atribuir para cada variável de dados_sim_2 como sendo NA a categoria de "Não informado ou Ignorado", 
+# Tarefa 5. Atribuir para cada variável de dados_sim_2 como sendo NA a categoria de "Não informado ou Ignorado",
 # geralmente com código 9
 # Verifique o dicionário do SIM para identificar qual o código das categorias de cada variável
 # Em variáveis quantitativas como IDADE verificar se existem valores como 9999 para NA
+
+dados_sim_2$SEXO[dados_sim_2$SEXO %in% c(0, 9)] = NA
+dados_sim_2$RACACOR[dados_sim_2$RACACOR == 9] = NA
+dados_sim_2$ESC2010[dados_sim_2$ESC2010 == 9] = NA
+dados_sim_2$TPMORTEOCO[dados_sim_2$TPMORTEOCO == 9] = NA
+dados_sim_2$CAUSABAS[dados_sim_2$CAUSABAS == "" | dados_sim_2$CAUSABAS == "9"] = NA
+
+# IDADE: quantidade "99" (2 últimos dígitos) indica ignorado dentro de cada unidade
+idade_chr = formatC(dados_sim_2$IDADE, width = 3, flag = "0")
+dados_sim_2$IDADE[substr(idade_chr, 2, 3) == "99"] = NA
+
+# conferência após a limpeza
+table(dados_sim_2$SEXO, useNA = "always")
+table(dados_sim_2$RACACOR, useNA = "always")
+table(dados_sim_2$ESC2010, useNA = "always")
+table(dados_sim_2$TPMORTEOCO, useNA = "always")
+summary(dados_sim_2$IDADE)
 
 
 # Ao terminar a Tarefa 5 commit com a mensagem "script BDEM - SIM - tarefas 1 a 5" e envie para o repositório Projeto_BDEM_2016
@@ -70,6 +115,28 @@
 # ATENçÃO: 1. Na hora de escrever os labels, somente a PRIMEIRA LETRA da legenda é maiúscula. Exemplo para SEXO: Feminino e Masculino
 #          2. Nesta Tarefa 6 não crie novas variáveis dentro do banco de dados
 
+dados_sim_2$TIPOBITO = factor(dados_sim_2$TIPOBITO, levels = c(1, 2),
+                               labels = c("Fetal", "Não fetal"))
+
+dados_sim_2$SEXO = factor(dados_sim_2$SEXO, levels = c(1, 2),
+                           labels = c("Masculino", "Feminino"))
+
+dados_sim_2$RACACOR = factor(dados_sim_2$RACACOR, levels = c(1, 2, 3, 4, 5),
+                              labels = c("Branca", "Preta", "Amarela", "Parda", "Indígena"))
+
+dados_sim_2$ESC2010 = factor(dados_sim_2$ESC2010, levels = c(0, 1, 2, 3, 4, 5),
+                              labels = c("Sem escolaridade", "Fundamental I (1ª a 4ª série)",
+                                         "Fundamental II (5ª a 8ª série)", "Médio (antigo 2º grau)",
+                                         "Superior incompleto", "Superior completo"))
+
+dados_sim_2$TPMORTEOCO = factor(dados_sim_2$TPMORTEOCO, levels = c(1, 2, 3, 4, 5, 8),
+                                 labels = c("Na gravidez", "No parto", "No abortamento",
+                                            "Até 42 dias após o término do parto",
+                                            "De 43 dias a 1 ano após o término da gestação",
+                                            "Não ocorreu nestes períodos"))
+
+str(dados_sim_2)
+
 
 # Ao terminar a Tarefa 6 commit com a mensagem "script BDEM - SIM - tarefas 1 a 6" e envie para o repositório Projeto_BDEM_2016
 
@@ -77,11 +144,104 @@
 # Tarefa 7. Criar um banco de dados, de nome SIM_UF.csv (Exemplo: SIM_RJ.csv), contendo as variáveis listadas no arquivo “Variáveis - Projeto - Tarefa 7 - SIM.pdf”
 # Atenção: a ordem das variáveis do arquivo deve ser respeitada
 
+# TORC: registro completo (sem NA) nas 87 variáveis originais do SIM_2016.csv, refeito o filtro da UF sobre dados_sim (não sobre dados_sim_2)
+dados_sim_full_2 = dados_sim[substr(as.character(dados_sim$CODMUNRES), 1, 2) == "27", ]
+
+# idade em dias (unidade 0/1 = minutos/horas -> < 1 dia; 2 = dias; 3 = meses -> dias aproximados) para as faixas neonatais
+idade_chr = formatC(dados_sim_2$IDADE, width = 3, flag = "0")
+unid = substr(idade_chr, 1, 1)
+qtd  = as.numeric(substr(idade_chr, 2, 3))
+dias_vida = ifelse(unid %in% c("0", "1"), 0,
+             ifelse(unid == "2", qtd,
+              ifelse(unid == "3", 30 * qtd, NA)))
+
+# idade em anos completos (só faz sentido quando a unidade é "4" = anos) para idade fértil (15 a 49 anos)
+idade_anos = ifelse(unid == "4", qtd, NA)
+idade_fertil = !is.na(idade_anos) & idade_anos >= 15 & idade_anos <= 49
+
+# classificação de CAUSABAS em capítulos/faixas do CID-10 (chave = letra + 2 primeiros dígitos, para comparação por intervalo)
+causa_letra = substr(dados_sim_2$CAUSABAS, 1, 1)
+causa_num   = suppressWarnings(as.numeric(substr(dados_sim_2$CAUSABAS, 2, 3)))
+cid_key = ifelse(is.na(dados_sim_2$CAUSABAS), NA, paste0(causa_letra, formatC(causa_num, width = 2, flag = "0")))
+
+externa = cid_key >= "V01" & cid_key <= "Y98"                                            # causas externas (V01-Y98)
+natural = !is.na(cid_key) & !externa                                                     # causas básicas naturais
+cb_i = natural & cid_key >= "A00" & cid_key <= "B99"                                      # infecciosas e parasitárias
+cb_n = natural & ((cid_key >= "C00" & cid_key <= "D48") | (cid_key >= "D50" & cid_key <= "D89"))  # neoplasias e sangue
+cb_c = natural & cid_key >= "I00" & cid_key <= "I99"                                      # aparelho circulatório
+cb_r = natural & cid_key >= "J00" & cid_key <= "J99"                                      # aparelho respiratório
+cb_o = natural & !cb_i & !cb_n & !cb_c & !cb_r                                            # demais causas naturais
+
+# faixas neonatais (0-27 dias) e pós-neonatal (28-364 dias), apenas para óbitos não fetais
+nt   = !is.na(dias_vida) & dias_vida <= 27 & dados_sim_2$TIPOBITO == "Não fetal"
+nt_p = nt & dias_vida <= 6
+nt_t = nt & dias_vida >= 7
+pnt  = !is.na(dias_vida) & dias_vida >= 28 & dias_vida <= 364 & dados_sim_2$TIPOBITO == "Não fetal"
+
+# óbitos maternos por TPMORTEOCO: precoces (gestação, parto, abortamento ou até 42 dias) e tardios (43 dias a 1 ano)
+mt_dg = dados_sim_2$TPMORTEOCO == "Na gravidez"
+mt_pt = dados_sim_2$TPMORTEOCO == "No parto"
+mt_ab = dados_sim_2$TPMORTEOCO == "No abortamento"
+mt_42 = dados_sim_2$TPMORTEOCO == "Até 42 dias após o término do parto"
+mt_43 = dados_sim_2$TPMORTEOCO == "De 43 dias a 1 ano após o término da gestação"
+mt_p  = mt_dg | mt_pt | mt_ab | mt_42
+mt    = mt_p | mt_43
+
+soma = function(x) sum(x, na.rm = TRUE)
+
+# calcula as 37 variáveis de contagem (TO a TO_MT_P_ESC) para um subconjunto de linhas
+resumo_sim = function(linhas) {
+  d87 = dados_sim_full_2[linhas, ]
+  data.frame(
+    TO = length(linhas), TORC = soma(complete.cases(d87)),
+    TORCR = NA_integer_,       # PENDENTE: lista das 14 variáveis reduzidas do SIM ainda não definida
+    TO_NN = soma(externa[linhas]), TO_N = soma(natural[linhas]),
+    TO_CB_I = soma(cb_i[linhas]), TO_CB_N = soma(cb_n[linhas]), TO_CB_C = soma(cb_c[linhas]),
+    TO_CB_R = soma(cb_r[linhas]), TO_CB_O = soma(cb_o[linhas]),
+    TO_M = soma(dados_sim_2$SEXO[linhas] == "Masculino"), TO_F = soma(dados_sim_2$SEXO[linhas] == "Feminino"),
+    TO_F_IF = soma(dados_sim_2$SEXO[linhas] == "Feminino" & idade_fertil[linhas]),
+    TO_FT = soma(dados_sim_2$TIPOBITO[linhas] == "Fetal"),
+    TO_NT = soma(nt[linhas]), TO_NT_P = soma(nt_p[linhas]), TO_NT_T = soma(nt_t[linhas]), TO_PNT = soma(pnt[linhas]),
+    TONT_B  = soma(nt[linhas] & dados_sim_2$RACACOR[linhas] == "Branca"),
+    TONT_PT = soma(nt[linhas] & dados_sim_2$RACACOR[linhas] == "Preta"),
+    TONT_A  = soma(nt[linhas] & dados_sim_2$RACACOR[linhas] == "Amarela"),
+    TONT_PD = soma(nt[linhas] & dados_sim_2$RACACOR[linhas] == "Parda"),
+    TONT_I  = soma(nt[linhas] & dados_sim_2$RACACOR[linhas] == "Indígena"),
+    TO_MT = soma(mt[linhas]), TO_MT_DG = soma(mt_dg[linhas]), TO_MT_PT = soma(mt_pt[linhas]),
+    TO_MT_AB = soma(mt_ab[linhas]), TO_MT_42 = soma(mt_42[linhas]), TO_MT_43 = soma(mt_43[linhas]),
+    TO_MT_P = soma(mt_p[linhas]), TO_MT_P_I = soma(mt_p[linhas] & dados_sim_2$SEXO[linhas] == "Feminino" & idade_fertil[linhas]),
+    TO_MT_P_ES   = soma(mt_p[linhas] & dados_sim_2$ESC2010[linhas] == "Sem escolaridade"),
+    TO_MT_P_EFI  = soma(mt_p[linhas] & dados_sim_2$ESC2010[linhas] == "Fundamental I (1ª a 4ª série)"),
+    TO_MT_P_EFII = soma(mt_p[linhas] & dados_sim_2$ESC2010[linhas] == "Fundamental II (5ª a 8ª série)"),
+    TO_MT_P_EM   = soma(mt_p[linhas] & dados_sim_2$ESC2010[linhas] == "Médio (antigo 2º grau)"),
+    TO_MT_P_ESI  = soma(mt_p[linhas] & dados_sim_2$ESC2010[linhas] == "Superior incompleto"),
+    TO_MT_P_ESC  = soma(mt_p[linhas] & dados_sim_2$ESC2010[linhas] == "Superior completo")
+  )
+}
+
+linha_uf = cbind(data.frame(ANO = 2016, NIVEL = "UF", CODMUNRES = 27),
+                  resumo_sim(seq_len(nrow(dados_sim_2))))
+
+municipios = sort(unique(dados_sim_2$CODMUNRES))
+linhas_municipio = do.call(rbind, lapply(municipios, function(cod) {
+  linhas = which(dados_sim_2$CODMUNRES == cod)
+  cbind(data.frame(ANO = 2016, NIVEL = "MUNICIPIO", CODMUNRES = cod), resumo_sim(linhas))
+}))
+
+SIM_AL = rbind(linha_uf, linhas_municipio)
+rownames(SIM_AL) = NULL
+
+dim(SIM_AL)          # deve ser 104  40 (1 linha de UF + 103 municípios)
+head(SIM_AL)
+str(SIM_AL)
+
 
 # Ao terminar a Tarefa 7 commit com a mensagem "script BDEM - SIM - tarefas 1 a 7" e envie para o repositório Projeto_BDEM_2016
 
 
 # Tarefa 8. Exportar o banco de dados com o nome SIM_UF.csv (Exemplo: SIM_RJ.csv)
+
+write.csv(SIM_AL, "SIM_AL.csv", row.names = FALSE)
 
 # Ao terminar a Tarefa 8 fazer um commit com o comentário "dados SIM_UF 2016 e script - SIM - tarefas 1 a 8"  e envie para o repositório Projeto_BDEM_2016
 
