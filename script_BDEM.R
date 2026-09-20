@@ -226,7 +226,7 @@ dados_sinasc_2$LOCNASC = factor(dados_sinasc_2$LOCNASC, levels = c(1, 2, 3, 4, 5
 
 dados_sinasc_2$ESTCIVMAE = factor(dados_sinasc_2$ESTCIVMAE, levels = c(1, 2, 3, 4, 5),
                                    labels = c("Solteira", "Casada", "Viúva",
-                                              "Separada judicialmente ou divorciada", "União estável"))
+                                              "Separada judicialmente/divorciada", "União estável"))
 
 dados_sinasc_2$GESTACAO = factor(dados_sinasc_2$GESTACAO, levels = c(1, 2, 3, 4, 5, 6),
                                   labels = c("Menos de 22 semanas", "22 a 27 semanas",
