@@ -133,7 +133,13 @@ str(dados_sinasc_1)
 # 21: 110493    22: 46986     23: 126246    24: 45366     25: 56083     26: 130733     27: 48164     28: 32218     29: 199830
 # 31: 253520    32: 53413     33: 219129    35: 601437     
 # 41: 155066    42: 95313     43: 141411
-# 50: 42432     51: 53531     52: 95563     53: 43340 
+# 50: 42432     51: 53531     52: 95563     53: 43340
+
+# Aluno responsável pela UF 27 (Alagoas - AL)
+dados_sinasc_1$UF = substr(as.character(dados_sinasc_1$CODMUNRES), 1, 2)
+dados_sinasc_2 = dados_sinasc_1[dados_sinasc_1$UF == "27", ]
+dados_sinasc_2$UF = NULL
+nrow(dados_sinasc_2)   # deve dar 48164, conforme a tabela de conferência acima (UF 27 - AL)
 
 
 # Ao terminar a Tarefa 3 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 3" e envie para o repositório Projeto_BDEM_2016
