@@ -284,6 +284,31 @@ str(dados_sinasc_2)
 # nova variável: dados_sinasc_2$ESTCIV: Sem companheiro: ESTCIVMAE 1, 3 ou 4, Com companheiro: ESTCIVMAE 2 ou 5
 # Ao categorizar as variáveis, garantir que sejam transformadas em tipo fator
 
+dados_sinasc_2$F_PESO = cut(dados_sinasc_2$PESO, breaks = c(-Inf, 2499, 3999, Inf),
+                             labels = c("Baixo peso", "Peso normal", "Macrossomia"))
+
+dados_sinasc_2$F_IDADE = cut(dados_sinasc_2$IDADEMAE,
+                              breaks = c(-Inf, 14, 19, 24, 29, 34, 39, 44, 49, Inf),
+                              labels = c("<15", "15-19", "20-24", "25-29", "30-34",
+                                         "35-39", "40-44", "45-49", "50+"))
+
+dados_sinasc_2$F_APGAR5 = cut(dados_sinasc_2$APGAR5, breaks = c(-Inf, 6, Inf),
+                               labels = c("Baixo", "Normal"))
+
+# PEREG: peregrinação materna (nasceu em município diferente do de residência)
+dados_sinasc_2$PEREG = NA
+dados_sinasc_2$PEREG[dados_sinasc_2$CODMUNNASC == dados_sinasc_2$CODMUNRES] = "Não"
+dados_sinasc_2$PEREG[dados_sinasc_2$CODMUNNASC != dados_sinasc_2$CODMUNRES] = "Sim"
+dados_sinasc_2$PEREG = factor(dados_sinasc_2$PEREG, levels = c("Não", "Sim"))
+
+# ESTCIV: agrupamento de ESTCIVMAE (já convertida em fator na Tarefa 6) por presença de companheiro
+dados_sinasc_2$ESTCIV = NA
+dados_sinasc_2$ESTCIV[dados_sinasc_2$ESTCIVMAE %in% c("Solteira", "Viúva", "Separada judicialmente/divorciada")] = "Sem companheiro"
+dados_sinasc_2$ESTCIV[dados_sinasc_2$ESTCIVMAE %in% c("Casada", "União estável")] = "Com companheiro"
+dados_sinasc_2$ESTCIV = factor(dados_sinasc_2$ESTCIV, levels = c("Sem companheiro", "Com companheiro"))
+
+str(dados_sinasc_2)
+
 
 # Ao terminar a Tarefa 7 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 7" e envie para o repositório Projeto_BDEM_2016
 
