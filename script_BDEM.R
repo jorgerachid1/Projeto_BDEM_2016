@@ -320,6 +320,27 @@ str(dados_sinasc_2)
 # nova variável apenas para casos de GRAVIDEZ Única: dados_sinasc_2$F_PIG: PIG: PESO < PESO_P10, AIG: PESO_P10 <= PESO <= PESO_P90, GIG: PESO > PESO_P90
 # Atenção para casos de NA em SEMAGESTAC, PESO ou SEXO. Lembre-se também que em dados_sinasc_2 SEXO está como fator com as categorias Feminino e Masculino.
 
+tabela_pig = read.csv("Tabela_PIG_Brasil.csv", sep = ";", encoding = "latin1")
+
+dados_sinasc_2 = merge(dados_sinasc_2, tabela_pig, by = c("SEMAGESTAC", "SEXO"), all.x = TRUE)
+
+dados_sinasc_2$F_PIG = NA
+dados_sinasc_2$F_PIG[dados_sinasc_2$GRAVIDEZ == "Única" &
+                       !is.na(dados_sinasc_2$PESO) & !is.na(dados_sinasc_2$PESO_P10) &
+                       dados_sinasc_2$PESO < dados_sinasc_2$PESO_P10] = "PIG"
+
+dados_sinasc_2$F_PIG[dados_sinasc_2$GRAVIDEZ == "Única" &
+                       !is.na(dados_sinasc_2$PESO) & !is.na(dados_sinasc_2$PESO_P10) & !is.na(dados_sinasc_2$PESO_P90) &
+                       dados_sinasc_2$PESO >= dados_sinasc_2$PESO_P10 & dados_sinasc_2$PESO <= dados_sinasc_2$PESO_P90] = "AIG"
+
+dados_sinasc_2$F_PIG[dados_sinasc_2$GRAVIDEZ == "Única" &
+                       !is.na(dados_sinasc_2$PESO) & !is.na(dados_sinasc_2$PESO_P90) &
+                       dados_sinasc_2$PESO > dados_sinasc_2$PESO_P90] = "GIG"
+
+dados_sinasc_2$F_PIG = factor(dados_sinasc_2$F_PIG, levels = c("PIG", "AIG", "GIG"))
+
+table(dados_sinasc_2$F_PIG, useNA = "always")
+str(dados_sinasc_2)
 
 # Ao terminar a Tarefa 8 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 8" e envie para o repositório Projeto_BDEM_2016
 
