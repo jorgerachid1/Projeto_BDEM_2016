@@ -349,6 +349,148 @@ str(dados_sinasc_2)
 # Atenção: a ordem das variáveis do arquivo deve ser respeitada
 
 
+# Recuperando informações que dependem dos dados antes das Tarefas 5/6
+dados_sinasc_bruto = dados_sinasc[dados_sinasc$CONTADOR %in% dados_sinasc_2$CONTADOR, ]
+dados_sinasc_bruto$REGCOMPLETO61 = complete.cases(dados_sinasc_bruto)
+dados_sinasc_bruto$AI_BRUTO = (dados_sinasc_bruto$LOCNASC == 5)
+
+dados_sinasc_1_sub = dados_sinasc_1[dados_sinasc_1$CONTADOR %in% dados_sinasc_2$CONTADOR, ]
+dados_sinasc_1_sub$REGCOMPLETO21 = complete.cases(dados_sinasc_1_sub)
+
+dados_sinasc_2 = merge(dados_sinasc_2, dados_sinasc_bruto[, c("CONTADOR", "REGCOMPLETO61", "AI_BRUTO")], by = "CONTADOR", all.x = TRUE)
+dados_sinasc_2 = merge(dados_sinasc_2, dados_sinasc_1_sub[, c("CONTADOR", "REGCOMPLETO21")], by = "CONTADOR", all.x = TRUE)
+
+
+# funções seguras para evitar erro em municípios com poucos registros
+media_segura = function(x) if (all(is.na(x))) NA else mean(x, na.rm = TRUE)
+dp_segura = function(x) if (sum(!is.na(x)) < 2) NA else sd(x, na.rm = TRUE)
+quantil_seguro = function(x, p) if (all(is.na(x))) NA else as.numeric(quantile(x, probs = p, na.rm = TRUE))
+
+resumo_sinasc = function(df, nivel, codmunres) {
+  data.frame(
+    ANO = 2016,
+    NIVEL = nivel,
+    CODMUNRES = codmunres,
+    TN = nrow(df),
+    TNRC = sum(df$REGCOMPLETO61, na.rm = TRUE),
+    TNRCR = sum(df$REGCOMPLETO21, na.rm = TRUE),
+    TGI_15 = sum(df$F_IDADE == "<15", na.rm = TRUE),
+    TGI_15_19 = sum(df$F_IDADE == "15-19", na.rm = TRUE),
+    TGI_20_24 = sum(df$F_IDADE == "20-24", na.rm = TRUE),
+    TGI_25_29 = sum(df$F_IDADE == "25-29", na.rm = TRUE),
+    TGI_30_34 = sum(df$F_IDADE == "30-34", na.rm = TRUE),
+    TGI_35_39 = sum(df$F_IDADE == "35-39", na.rm = TRUE),
+    TGI_40_44 = sum(df$F_IDADE == "40-44", na.rm = TRUE),
+    TGI_45_49 = sum(df$F_IDADE == "45-49", na.rm = TRUE),
+    TGI_50 = sum(df$F_IDADE == "50+", na.rm = TRUE),
+    TGIF = sum(df$F_IDADE %in% c("15-19","20-24","25-29","30-34","35-39","40-44","45-49"), na.rm = TRUE),
+    IM_P25 = quantil_seguro(df$IDADEMAE, 0.25),
+    IM_P50 = quantil_seguro(df$IDADEMAE, 0.50),
+    IM_P75 = quantil_seguro(df$IDADEMAE, 0.75),
+    IM_MD = media_segura(df$IDADEMAE),
+    IM_DP = dp_segura(df$IDADEMAE),
+    EM_S = sum(df$ESCMAE2010 == "Sem escolaridade", na.rm = TRUE),
+    EM_FI = sum(df$ESCMAE2010 == "Fundamental I (1ª a 4ª série)", na.rm = TRUE),
+    EM_FII = sum(df$ESCMAE2010 == "Fundamental II (5ª a 8ª série)", na.rm = TRUE),
+    EM_M = sum(df$ESCMAE2010 == "Médio (antigo 2º grau)", na.rm = TRUE),
+    EM_SI = sum(df$ESCMAE2010 == "Superior incompleto", na.rm = TRUE),
+    EM_SC = sum(df$ESCMAE2010 == "Superior completo", na.rm = TRUE),
+    TGRC_B = sum(df$RACACORMAE == "Branca", na.rm = TRUE),
+    TGRC_PT = sum(df$RACACORMAE == "Preta", na.rm = TRUE),
+    TGRC_A = sum(df$RACACORMAE == "Amarela", na.rm = TRUE),
+    TGRC_PD = sum(df$RACACORMAE == "Parda", na.rm = TRUE),
+    TGRC_I = sum(df$RACACORMAE == "Indígena", na.rm = TRUE),
+    TGSC = sum(df$ESTCIV == "Sem companheiro", na.rm = TRUE),
+    TGCC = sum(df$ESTCIV == "Com companheiro", na.rm = TRUE),
+    TGPRI = sum(df$PARIDADE == "Nulípara", na.rm = TRUE),
+    TGNPRI = sum(df$PARIDADE == "Multípara", na.rm = TRUE),
+    TGU = sum(df$GRAVIDEZ == "Única", na.rm = TRUE),
+    TGG = sum(df$GRAVIDEZ %in% c("Dupla", "Tripla ou mais"), na.rm = TRUE),
+    TGD_22 = sum(df$GESTACAO == "Menos de 22 semanas", na.rm = TRUE),
+    TGD_22_27 = sum(df$GESTACAO == "22 a 27 semanas", na.rm = TRUE),
+    TGD_28_31 = sum(df$GESTACAO == "28 a 31 semanas", na.rm = TRUE),
+    TGD_32_36 = sum(df$GESTACAO == "32 a 36 semanas", na.rm = TRUE),
+    TGD_37_41 = sum(df$GESTACAO == "37 a 41 semanas", na.rm = TRUE),
+    TGD_42 = sum(df$GESTACAO == "42 semanas e mais", na.rm = TRUE),
+    TGD_PRT = sum(df$GESTACAO %in% c("Menos de 22 semanas", "22 a 27 semanas", "28 a 31 semanas", "32 a 36 semanas"), na.rm = TRUE),
+    TGD_AT = sum(df$GESTACAO == "37 a 41 semanas", na.rm = TRUE),
+    TGD_PST = sum(df$GESTACAO == "42 semanas e mais", na.rm = TRUE),
+    DG_P25 = quantil_seguro(df$SEMAGESTAC, 0.25),
+    DG_P50 = quantil_seguro(df$SEMAGESTAC, 0.50),
+    DG_P75 = quantil_seguro(df$SEMAGESTAC, 0.75),
+    DG_MD = media_segura(df$SEMAGESTAC),
+    DG_DP = dp_segura(df$SEMAGESTAC),
+    TKC_NR = sum(df$KOTELCHUCK == "Não realizou pré-natal", na.rm = TRUE),
+    TKC_ID = sum(df$KOTELCHUCK == "Inadequado", na.rm = TRUE),
+    TKC_IT = sum(df$KOTELCHUCK == "Intermediário", na.rm = TRUE),
+    TKC_AD = sum(df$KOTELCHUCK == "Adequado", na.rm = TRUE),
+    TKC_MAD = sum(df$KOTELCHUCK == "Mais que adequado", na.rm = TRUE),
+    TGPRG_S = sum(df$PEREG == "Sim", na.rm = TRUE),
+    TGPRG_N = sum(df$PEREG == "Não", na.rm = TRUE),
+    TPV = sum(df$PARTO == "Vaginal", na.rm = TRUE),
+    TPC = sum(df$PARTO == "Cesário", na.rm = TRUE),
+    TRAP_C = sum(df$TPAPRESENT == "Cefálico", na.rm = TRUE),
+    TRAP_P = sum(df$TPAPRESENT == "Pélvica ou podálica", na.rm = TRUE),
+    TRAP_T = sum(df$TPAPRESENT == "Transversa", na.rm = TRUE),
+    TGROB_1 = sum(df$TPROBSON == 1, na.rm = TRUE),
+    TGROB_2 = sum(df$TPROBSON == 2, na.rm = TRUE),
+    TGROB_3 = sum(df$TPROBSON == 3, na.rm = TRUE),
+    TGROB_4 = sum(df$TPROBSON == 4, na.rm = TRUE),
+    TGROB_5 = sum(df$TPROBSON == 5, na.rm = TRUE),
+    TGROB_6 = sum(df$TPROBSON == 6, na.rm = TRUE),
+    TGROB_7 = sum(df$TPROBSON == 7, na.rm = TRUE),
+    TGROB_8 = sum(df$TPROBSON == 8, na.rm = TRUE),
+    TGROB_9 = sum(df$TPROBSON == 9, na.rm = TRUE),
+    TGROB_10 = sum(df$TPROBSON == 10, na.rm = TRUE),
+    TNLOC_H = sum(df$LOCNASC == "Hospital", na.rm = TRUE),
+    TNLOC_ES = sum(df$LOCNASC == "Outros estabelecimentos de saúde", na.rm = TRUE),
+    TNLOC_D = sum(df$LOCNASC == "Domicílio", na.rm = TRUE),
+    TNLOC_O = sum(df$LOCNASC == "Outros", na.rm = TRUE),
+    TNLOC_AI = sum(df$AI_BRUTO, na.rm = TRUE),
+    TRS_M = sum(df$SEXO == "Masculino", na.rm = TRUE),
+    TRS_F = sum(df$SEXO == "Feminino", na.rm = TRUE),
+    TRRC_B = sum(df$RACACOR == "Branca", na.rm = TRUE),
+    TRRC_PT = sum(df$RACACOR == "Preta", na.rm = TRUE),
+    TRRC_A = sum(df$RACACOR == "Amarela", na.rm = TRUE),
+    TRRC_PD = sum(df$RACACOR == "Parda", na.rm = TRUE),
+    TRRC_I = sum(df$RACACOR == "Indígena", na.rm = TRUE),
+    TRP_BP = sum(df$F_PESO == "Baixo peso", na.rm = TRUE),
+    TRP_N = sum(df$F_PESO == "Peso normal", na.rm = TRUE),
+    TRP_M = sum(df$F_PESO == "Macrossomia", na.rm = TRUE),
+    PESO_P25 = quantil_seguro(df$PESO, 0.25),
+    PESO_P50 = quantil_seguro(df$PESO, 0.50),
+    PESO_P75 = quantil_seguro(df$PESO, 0.75),
+    PESO_MD = media_segura(df$PESO),
+    PESO_DP = dp_segura(df$PESO),
+    TRPIG_P = sum(df$F_PIG == "PIG", na.rm = TRUE),
+    TRPIG_A = sum(df$F_PIG == "AIG", na.rm = TRUE),
+    TRPIG_G = sum(df$F_PIG == "GIG", na.rm = TRUE),
+    TRAPG5_B = sum(df$F_APGAR5 == "Baixo", na.rm = TRUE),
+    TRAPG5_N = sum(df$F_APGAR5 == "Normal", na.rm = TRUE),
+    APG5_MD = media_segura(df$APGAR5),
+    APG5_DP = dp_segura(df$APGAR5),
+    TRAC = sum(df$IDANOMAL == "Sim", na.rm = TRUE),
+    TRSAC = sum(df$IDANOMAL == "Não", na.rm = TRUE)
+  )
+}
+
+municipios = sort(unique(dados_sinasc_2$CODMUNRES))
+
+SINASC_MUNICIPIO = do.call(rbind, lapply(municipios, function(m) {
+  resumo_sinasc(dados_sinasc_2[dados_sinasc_2$CODMUNRES == m, ], nivel = "MUNICIPIO", codmunres = m)
+}))
+
+linha_estado = resumo_sinasc(dados_sinasc_2, nivel = "UF", codmunres = 27)
+
+SINASC_UF = rbind(SINASC_MUNICIPIO, linha_estado)
+
+dim(SINASC_UF)   # deve ter (nº de municípios do Alagoas + 1) linhas e 103 colunas
+str(SINASC_UF)
+
+
+## Ficou com alguns dados estranhos ##
+
+
 # Ao terminar a Tarefa 9 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 9" e envie para o repositório Projeto_BDEM_2016
 
 
