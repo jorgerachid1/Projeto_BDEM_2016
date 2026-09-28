@@ -193,7 +193,8 @@ dados_sinasc_2$KOTELCHUCK[dados_sinasc_2$KOTELCHUCK == 9] = NA
 
 # APGAR5: 99 indica ignorado
 dados_sinasc_2$APGAR5[dados_sinasc_2$APGAR5 == 99] = NA
-
+#corrigindo o que eu tinha esquecido na tarefa anterior
+dados_sinasc_2$PESO[dados_sinasc_2$PESO == 9999] = NA
 # conferência após a limpeza
 table(dados_sinasc_2$LOCNASC, useNA = "always")
 table(dados_sinasc_2$ESTCIVMAE, useNA = "always")
@@ -220,9 +221,9 @@ summary(dados_sinasc_2$APGAR5)
 # ATENçÃO: 1. Na hora de escrever os labels, somente a primeira letra da legenda é maiúscula. Exemplo para SEXO: Feminino e Masculino
 #          2. Nesta Tarefa 6 não crie novas variáveis dentro do banco de dados
 
-dados_sinasc_2$LOCNASC = factor(dados_sinasc_2$LOCNASC, levels = c(1, 2, 3, 4, 5),
-                                 labels = c("Hospital", "Outros estabelecimentos de saúde",
-                                            "Domicílio", "Outros", "Aldeia indígena"))
+dados_sinasc_2$LOCNASC = factor(dados_sinasc_2$LOCNASC, levels = c(1, 2, 3, 4),
+                                labels = c("Hospital", "Outros estabelecimentos de saúde",
+                                           "Domicílio", "Outros"))
 
 dados_sinasc_2$ESTCIVMAE = factor(dados_sinasc_2$ESTCIVMAE, levels = c(1, 2, 3, 4, 5),
                                    labels = c("Solteira", "Casada", "Viúva",
