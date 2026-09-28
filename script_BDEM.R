@@ -320,6 +320,24 @@ str(dados_sinasc_2)
 # nova variável apenas para casos de GRAVIDEZ Única: dados_sinasc_2$F_PIG: PIG: PESO < PESO_P10, AIG: PESO_P10 <= PESO <= PESO_P90, GIG: PESO > PESO_P90
 # Atenção para casos de NA em SEMAGESTAC, PESO ou SEXO. Lembre-se também que em dados_sinasc_2 SEXO está como fator com as categorias Feminino e Masculino.
 
+# Vetor lógico que identifica as linhas do Alagoas — o mesmo usado na Tarefa 3,
+# válido tanto para dados_sinasc quanto para dados_sinasc_1 (mesma ordem de linhas)
+
+filtro_al = dados_sinasc_1$UF == "27"
+
+# TNRC: completude nas 61 variáveis originais do SINASC
+REGCOMPLETO61 = complete.cases(dados_sinasc[filtro_al, ])
+
+# TNRCR: completude nas variáveis selecionadas na Tarefa 2 (21 + UF = 22 colunas, batendo com o PDF)
+REGCOMPLETO21 = complete.cases(dados_sinasc_1[filtro_al, ])
+
+# anexando por posição (não por merge) — nesse ponto dados_sinasc_2 ainda está na ordem original
+dados_sinasc_2$REGCOMPLETO61 = REGCOMPLETO61
+dados_sinasc_2$REGCOMPLETO21 = REGCOMPLETO21
+
+# TNLOC_AI: aproveitando o código bruto do LOCNASC (código 5) antes de virar fator na Tarefa 6
+dados_sinasc_2$AI_BRUTO = (dados_sinasc[filtro_al, "LOCNASC"] == 5)
+
 tabela_pig = read.csv("Tabela_PIG_Brasil.csv", sep = ";", encoding = "latin1")
 
 dados_sinasc_2 = merge(dados_sinasc_2, tabela_pig, by = c("SEMAGESTAC", "SEXO"), all.x = TRUE)
@@ -347,18 +365,6 @@ str(dados_sinasc_2)
 
 # Tarefa 9. Criar um banco de dados, de nome SINASC_UF.csv (Exemplo: SINASC_RJ.csv), contendo as variáveis listadas no arquivo “Variáveis - Projeto - Tarefa 9 - SINASC.pdf”
 # Atenção: a ordem das variáveis do arquivo deve ser respeitada
-
-
-# Recuperando informações que dependem dos dados antes das Tarefas 5/6
-dados_sinasc_bruto = dados_sinasc[dados_sinasc$CONTADOR %in% dados_sinasc_2$CONTADOR, ]
-dados_sinasc_bruto$REGCOMPLETO61 = complete.cases(dados_sinasc_bruto)
-dados_sinasc_bruto$AI_BRUTO = (dados_sinasc_bruto$LOCNASC == 5)
-
-dados_sinasc_1_sub = dados_sinasc_1[dados_sinasc_1$CONTADOR %in% dados_sinasc_2$CONTADOR, ]
-dados_sinasc_1_sub$REGCOMPLETO21 = complete.cases(dados_sinasc_1_sub)
-
-dados_sinasc_2 = merge(dados_sinasc_2, dados_sinasc_bruto[, c("CONTADOR", "REGCOMPLETO61", "AI_BRUTO")], by = "CONTADOR", all.x = TRUE)
-dados_sinasc_2 = merge(dados_sinasc_2, dados_sinasc_1_sub[, c("CONTADOR", "REGCOMPLETO21")], by = "CONTADOR", all.x = TRUE)
 
 
 # funções seguras para evitar erro em municípios com poucos registros
