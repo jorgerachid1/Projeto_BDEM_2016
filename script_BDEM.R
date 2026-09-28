@@ -497,6 +497,7 @@ str(SINASC_UF)
 # Tarefa 10. Exportar o banco de dados com o nome SINASC_UF.csv (Exemplo: SINASC_RJ.csv)
 # Ao terminar a Tarefa 10 commit com o comentário "dados SINASC_UF 2016 e script - SIM - tarefas 1 a 10"  e envie para o repositório Projeto_BDEM_2016
 
+write.csv(SINASC_UF, "SINASC_AL.csv", row.names = FALSE)
 
 
 ####################################
