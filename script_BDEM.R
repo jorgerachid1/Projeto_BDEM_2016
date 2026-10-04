@@ -258,13 +258,26 @@ write.csv(SIM_AL, "SIM_AL.csv", row.names = FALSE)
 # Por uma questão de padronização coloque todos os nomes das variáveis em letra maiúscula,
 # usando o comando names(dados_sinasc) = toupper(names(dados_sinasc))
 
+dados_sinasc = read.csv("SINASC_2016.csv", sep = ";", encoding = "latin1")
+names(dados_sinasc) = toupper(names(dados_sinasc))
+# Se a leitura não resultar em 2857800 linhas e 61 colunas, tente sep = ";" e/ou encoding = "latin1"
+dim(dados_sinasc)          # deve ser 2857800  61
+str(dados_sinasc)
+
 
 # Ao terminar a Tarefa 1 commit com a mensagem "script BDEM - SINASC - tarefa 1" e envie para o repositório Projeto_BDEM_2016
 
 # Tarefa 2. Reduzir dados_sinasc apenas para as colunas que serão utilizadas, nomeando este novo banco de dados como dados_sinasc_1
 # As colunas serão 3, 4, 5, 6, 11, 12, 13, 14, 18, 20, 21, 22, 23, 34, 37, 43, 47, 58, 59, 60, 61
-# Nomes das respectivas variáveis: CODMUNNASC, LOCNASC, IDADEMAE, ESTCIVMAE, CODMUNRES, GESTACAO, GRAVIDEZ, PARTO, 
+# Nomes das respectivas variáveis: CODMUNNASC, LOCNASC, IDADEMAE, ESTCIVMAE, CODMUNRES, GESTACAO, GRAVIDEZ, PARTO,
 # SEXO, APGAR5, RACACOR, PESO, IDANOMAL, ESCMAE2010, RACACORMAE, SEMAGESTAC, TPAPRESENT, TPROBSON, PARIDADE, KOTELCHUCK, CONTADOR
+
+dados_sinasc_1 = dados_sinasc[, c(3, 4, 5, 6, 11, 12, 13, 14, 18, 20, 21, 22, 23, 34, 37, 43, 47, 58, 59, 60, 61)]
+names(dados_sinasc_1) = c("CODMUNNASC", "LOCNASC", "IDADEMAE", "ESTCIVMAE", "CODMUNRES",
+                           "GESTACAO", "GRAVIDEZ", "PARTO", "SEXO", "APGAR5", "RACACOR",
+                           "PESO", "IDANOMAL", "ESCMAE2010", "RACACORMAE", "SEMAGESTAC",
+                           "TPAPRESENT", "TPROBSON", "PARIDADE", "KOTELCHUCK", "CONTADOR")
+str(dados_sinasc_1)
 
 
 # Ao terminar a Tarefa 2 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 2" e envie para o repositório Projeto_BDEM_2016
@@ -280,7 +293,13 @@ write.csv(SIM_AL, "SIM_AL.csv", row.names = FALSE)
 # 21: 110493    22: 46986     23: 126246    24: 45366     25: 56083     26: 130733     27: 48164     28: 32218     29: 199830
 # 31: 253520    32: 53413     33: 219129    35: 601437     
 # 41: 155066    42: 95313     43: 141411
-# 50: 42432     51: 53531     52: 95563     53: 43340 
+# 50: 42432     51: 53531     52: 95563     53: 43340
+
+# Aluno responsável pela UF 27 (Alagoas - AL)
+dados_sinasc_1$UF = substr(as.character(dados_sinasc_1$CODMUNRES), 1, 2)
+dados_sinasc_2 = dados_sinasc_1[dados_sinasc_1$UF == "27", ]
+dados_sinasc_2$UF = NULL
+nrow(dados_sinasc_2)   # deve dar 48164, conforme a tabela de conferência acima (UF 27 - AL)
 
 
 # Ao terminar a Tarefa 3 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 3" e envie para o repositório Projeto_BDEM_2016
@@ -289,6 +308,26 @@ write.csv(SIM_AL, "SIM_AL.csv", row.names = FALSE)
 # Tarefa 4. Verificar em dados_sinasc_2 a frequência das categorias das seguintes variáveis: LOCNASC, ESTCIVMAE, GESTACAO, GRAVIDEZ, PARTO,
 # SEXO, RACACOR, IDANOMAL, ESCMAE2010, RACACORMAE, TPAPRESENT, TPROBSON, PARIDADE, KOTELCHUCK
 # Avalie também os valores das variáveis quantitativas de IDADEMAE, SEMAGESTAC, APGAR5 e PESO
+
+table(dados_sinasc_2$LOCNASC, useNA = "always")
+table(dados_sinasc_2$ESTCIVMAE, useNA = "always")
+table(dados_sinasc_2$GESTACAO, useNA = "always")
+table(dados_sinasc_2$GRAVIDEZ, useNA = "always")
+table(dados_sinasc_2$PARTO, useNA = "always")
+table(dados_sinasc_2$SEXO, useNA = "always")
+table(dados_sinasc_2$RACACOR, useNA = "always")
+table(dados_sinasc_2$IDANOMAL, useNA = "always")
+table(dados_sinasc_2$ESCMAE2010, useNA = "always")
+table(dados_sinasc_2$RACACORMAE, useNA = "always")
+table(dados_sinasc_2$TPAPRESENT, useNA = "always")
+table(dados_sinasc_2$TPROBSON, useNA = "always")
+table(dados_sinasc_2$PARIDADE, useNA = "always")
+table(dados_sinasc_2$KOTELCHUCK, useNA = "always")
+
+summary(dados_sinasc_2$IDADEMAE)
+summary(dados_sinasc_2$SEMAGESTAC)
+summary(dados_sinasc_2$APGAR5)
+summary(dados_sinasc_2$PESO)
 
 
 # Ao terminar a Tarefa 4 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 4" e envie para o repositório Projeto_BDEM_2016
@@ -299,6 +338,36 @@ write.csv(SIM_AL, "SIM_AL.csv", row.names = FALSE)
 # Verifique o dicionário do SINASC para identificar qual o código das categorias de cada variável
 # KOTELCHUCK = 9 significa "Não informado"   TPROBSON = 11 significa "Não classificado por falta de informação"
 # Em variáveis quantitativas como IDADEMAE verificar se existem valores como 9999 para NA
+
+dados_sinasc_2$LOCNASC[dados_sinasc_2$LOCNASC == 9] = NA
+dados_sinasc_2$ESTCIVMAE[dados_sinasc_2$ESTCIVMAE == 9] = NA
+dados_sinasc_2$GESTACAO[dados_sinasc_2$GESTACAO == 9] = NA
+dados_sinasc_2$GRAVIDEZ[dados_sinasc_2$GRAVIDEZ == 9] = NA
+dados_sinasc_2$PARTO[dados_sinasc_2$PARTO == 9] = NA
+dados_sinasc_2$SEXO[dados_sinasc_2$SEXO == 0] = NA
+dados_sinasc_2$IDANOMAL[dados_sinasc_2$IDANOMAL == 9] = NA
+dados_sinasc_2$ESCMAE2010[dados_sinasc_2$ESCMAE2010 == 9] = NA
+dados_sinasc_2$TPAPRESENT[dados_sinasc_2$TPAPRESENT == 9] = NA
+dados_sinasc_2$TPROBSON[dados_sinasc_2$TPROBSON == 11] = NA
+dados_sinasc_2$KOTELCHUCK[dados_sinasc_2$KOTELCHUCK == 9] = NA
+
+# APGAR5: 99 indica ignorado
+dados_sinasc_2$APGAR5[dados_sinasc_2$APGAR5 == 99] = NA
+#corrigindo o que eu tinha esquecido na tarefa anterior
+dados_sinasc_2$PESO[dados_sinasc_2$PESO == 9999] = NA
+# conferência após a limpeza
+table(dados_sinasc_2$LOCNASC, useNA = "always")
+table(dados_sinasc_2$ESTCIVMAE, useNA = "always")
+table(dados_sinasc_2$GESTACAO, useNA = "always")
+table(dados_sinasc_2$GRAVIDEZ, useNA = "always")
+table(dados_sinasc_2$PARTO, useNA = "always")
+table(dados_sinasc_2$SEXO, useNA = "always")
+table(dados_sinasc_2$IDANOMAL, useNA = "always")
+table(dados_sinasc_2$ESCMAE2010, useNA = "always")
+table(dados_sinasc_2$TPAPRESENT, useNA = "always")
+table(dados_sinasc_2$TPROBSON, useNA = "always")
+table(dados_sinasc_2$KOTELCHUCK, useNA = "always")
+summary(dados_sinasc_2$APGAR5)
 
 
 # Ao terminar a Tarefa 5 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 5" e envie para o repositório Projeto_BDEM_2016
@@ -311,6 +380,57 @@ write.csv(SIM_AL, "SIM_AL.csv", row.names = FALSE)
 
 # ATENçÃO: 1. Na hora de escrever os labels, somente a primeira letra da legenda é maiúscula. Exemplo para SEXO: Feminino e Masculino
 #          2. Nesta Tarefa 6 não crie novas variáveis dentro do banco de dados
+
+dados_sinasc_2$LOCNASC = factor(dados_sinasc_2$LOCNASC, levels = c(1, 2, 3, 4),
+                                labels = c("Hospital", "Outros estabelecimentos de saúde",
+                                           "Domicílio", "Outros"))
+
+dados_sinasc_2$ESTCIVMAE = factor(dados_sinasc_2$ESTCIVMAE, levels = c(1, 2, 3, 4, 5),
+                                   labels = c("Solteira", "Casada", "Viúva",
+                                              "Separada judicialmente/divorciada", "União estável"))
+
+dados_sinasc_2$GESTACAO = factor(dados_sinasc_2$GESTACAO, levels = c(1, 2, 3, 4, 5, 6),
+                                  labels = c("Menos de 22 semanas", "22 a 27 semanas",
+                                             "28 a 31 semanas", "32 a 36 semanas",
+                                             "37 a 41 semanas", "42 semanas e mais"))
+
+dados_sinasc_2$GRAVIDEZ = factor(dados_sinasc_2$GRAVIDEZ, levels = c(1, 2, 3),
+                                  labels = c("Única", "Dupla", "Tripla ou mais"))
+
+dados_sinasc_2$PARTO = factor(dados_sinasc_2$PARTO, levels = c(1, 2),
+                               labels = c("Vaginal", "Cesário"))
+
+dados_sinasc_2$SEXO = factor(dados_sinasc_2$SEXO, levels = c(1, 2),
+                              labels = c("Masculino", "Feminino"))
+
+dados_sinasc_2$RACACOR = factor(dados_sinasc_2$RACACOR, levels = c(1, 2, 3, 4, 5),
+                                 labels = c("Branca", "Preta", "Amarela", "Parda", "Indígena"))
+
+dados_sinasc_2$IDANOMAL = factor(dados_sinasc_2$IDANOMAL, levels = c(1, 2),
+                                  labels = c("Sim", "Não"))
+
+dados_sinasc_2$ESCMAE2010 = factor(dados_sinasc_2$ESCMAE2010, levels = c(0, 1, 2, 3, 4, 5),
+                                    labels = c("Sem escolaridade", "Fundamental I (1ª a 4ª série)",
+                                               "Fundamental II (5ª a 8ª série)", "Médio (antigo 2º grau)",
+                                               "Superior incompleto", "Superior completo"))
+
+dados_sinasc_2$RACACORMAE = factor(dados_sinasc_2$RACACORMAE, levels = c(1, 2, 3, 4, 5),
+                                    labels = c("Branca", "Preta", "Amarela", "Parda", "Indígena"))
+
+dados_sinasc_2$TPAPRESENT = factor(dados_sinasc_2$TPAPRESENT, levels = c(1, 2, 3),
+                                    labels = c("Cefálico", "Pélvica ou podálica", "Transversa"))
+
+dados_sinasc_2$PARIDADE = factor(dados_sinasc_2$PARIDADE, levels = c(0, 1),
+                                  labels = c("Nulípara", "Multípara"))
+
+dados_sinasc_2$KOTELCHUCK = factor(dados_sinasc_2$KOTELCHUCK, levels = c(1, 2, 3, 4, 5),
+                                    labels = c("Não realizou pré-natal", "Inadequado", "Intermediário",
+                                               "Adequado", "Mais que adequado"))
+
+# TPROBSON não recebe legenda: é o código do Grupo de Robson gerado pelo sistema,
+# e o dicionário do SINASC não define descrição textual para as 10 categorias
+
+str(dados_sinasc_2)
 
 
 # Ao terminar a Tarefa 6 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 6" e envie para o repositório Projeto_BDEM_2016
@@ -325,6 +445,31 @@ write.csv(SIM_AL, "SIM_AL.csv", row.names = FALSE)
 # nova variável: dados_sinasc_2$ESTCIV: Sem companheiro: ESTCIVMAE 1, 3 ou 4, Com companheiro: ESTCIVMAE 2 ou 5
 # Ao categorizar as variáveis, garantir que sejam transformadas em tipo fator
 
+dados_sinasc_2$F_PESO = cut(dados_sinasc_2$PESO, breaks = c(-Inf, 2499, 3999, Inf),
+                             labels = c("Baixo peso", "Peso normal", "Macrossomia"))
+
+dados_sinasc_2$F_IDADE = cut(dados_sinasc_2$IDADEMAE,
+                              breaks = c(-Inf, 14, 19, 24, 29, 34, 39, 44, 49, Inf),
+                              labels = c("<15", "15-19", "20-24", "25-29", "30-34",
+                                         "35-39", "40-44", "45-49", "50+"))
+
+dados_sinasc_2$F_APGAR5 = cut(dados_sinasc_2$APGAR5, breaks = c(-Inf, 6, Inf),
+                               labels = c("Baixo", "Normal"))
+
+# PEREG: peregrinação materna (nasceu em município diferente do de residência)
+dados_sinasc_2$PEREG = NA
+dados_sinasc_2$PEREG[dados_sinasc_2$CODMUNNASC == dados_sinasc_2$CODMUNRES] = "Não"
+dados_sinasc_2$PEREG[dados_sinasc_2$CODMUNNASC != dados_sinasc_2$CODMUNRES] = "Sim"
+dados_sinasc_2$PEREG = factor(dados_sinasc_2$PEREG, levels = c("Não", "Sim"))
+
+# ESTCIV: agrupamento de ESTCIVMAE (já convertida em fator na Tarefa 6) por presença de companheiro
+dados_sinasc_2$ESTCIV = NA
+dados_sinasc_2$ESTCIV[dados_sinasc_2$ESTCIVMAE %in% c("Solteira", "Viúva", "Separada judicialmente/divorciada")] = "Sem companheiro"
+dados_sinasc_2$ESTCIV[dados_sinasc_2$ESTCIVMAE %in% c("Casada", "União estável")] = "Com companheiro"
+dados_sinasc_2$ESTCIV = factor(dados_sinasc_2$ESTCIV, levels = c("Sem companheiro", "Com companheiro"))
+
+str(dados_sinasc_2)
+
 
 # Ao terminar a Tarefa 7 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 7" e envie para o repositório Projeto_BDEM_2016
 
@@ -335,6 +480,45 @@ write.csv(SIM_AL, "SIM_AL.csv", row.names = FALSE)
 # nova variável apenas para casos de GRAVIDEZ Única: dados_sinasc_2$F_PIG: PIG: PESO < PESO_P10, AIG: PESO_P10 <= PESO <= PESO_P90, GIG: PESO > PESO_P90
 # Atenção para casos de NA em SEMAGESTAC, PESO ou SEXO. Lembre-se também que em dados_sinasc_2 SEXO está como fator com as categorias Feminino e Masculino.
 
+# Vetor lógico que identifica as linhas do Alagoas — o mesmo usado na Tarefa 3,
+# válido tanto para dados_sinasc quanto para dados_sinasc_1 (mesma ordem de linhas)
+
+filtro_al = dados_sinasc_1$UF == "27"
+
+# TNRC: completude nas 61 variáveis originais do SINASC
+REGCOMPLETO61 = complete.cases(dados_sinasc[filtro_al, ])
+
+# TNRCR: completude nas variáveis selecionadas na Tarefa 2 (21 + UF = 22 colunas, batendo com o PDF)
+REGCOMPLETO21 = complete.cases(dados_sinasc_1[filtro_al, ])
+
+# anexando por posição (não por merge) — nesse ponto dados_sinasc_2 ainda está na ordem original
+dados_sinasc_2$REGCOMPLETO61 = REGCOMPLETO61
+dados_sinasc_2$REGCOMPLETO21 = REGCOMPLETO21
+
+# TNLOC_AI: aproveitando o código bruto do LOCNASC (código 5) antes de virar fator na Tarefa 6
+dados_sinasc_2$AI_BRUTO = (dados_sinasc[filtro_al, "LOCNASC"] == 5)
+
+tabela_pig = read.csv("Tabela_PIG_Brasil.csv", sep = ";", encoding = "latin1")
+
+dados_sinasc_2 = merge(dados_sinasc_2, tabela_pig, by = c("SEMAGESTAC", "SEXO"), all.x = TRUE)
+
+dados_sinasc_2$F_PIG = NA
+dados_sinasc_2$F_PIG[dados_sinasc_2$GRAVIDEZ == "Única" &
+                       !is.na(dados_sinasc_2$PESO) & !is.na(dados_sinasc_2$PESO_P10) &
+                       dados_sinasc_2$PESO < dados_sinasc_2$PESO_P10] = "PIG"
+
+dados_sinasc_2$F_PIG[dados_sinasc_2$GRAVIDEZ == "Única" &
+                       !is.na(dados_sinasc_2$PESO) & !is.na(dados_sinasc_2$PESO_P10) & !is.na(dados_sinasc_2$PESO_P90) &
+                       dados_sinasc_2$PESO >= dados_sinasc_2$PESO_P10 & dados_sinasc_2$PESO <= dados_sinasc_2$PESO_P90] = "AIG"
+
+dados_sinasc_2$F_PIG[dados_sinasc_2$GRAVIDEZ == "Única" &
+                       !is.na(dados_sinasc_2$PESO) & !is.na(dados_sinasc_2$PESO_P90) &
+                       dados_sinasc_2$PESO > dados_sinasc_2$PESO_P90] = "GIG"
+
+dados_sinasc_2$F_PIG = factor(dados_sinasc_2$F_PIG, levels = c("PIG", "AIG", "GIG"))
+
+table(dados_sinasc_2$F_PIG, useNA = "always")
+str(dados_sinasc_2)
 
 # Ao terminar a Tarefa 8 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 8" e envie para o repositório Projeto_BDEM_2016
 
@@ -343,12 +527,143 @@ write.csv(SIM_AL, "SIM_AL.csv", row.names = FALSE)
 # Atenção: a ordem das variáveis do arquivo deve ser respeitada
 
 
+# funções seguras para evitar erro em municípios com poucos registros
+media_segura = function(x) if (all(is.na(x))) NA else mean(x, na.rm = TRUE)
+dp_segura = function(x) if (sum(!is.na(x)) < 2) NA else sd(x, na.rm = TRUE)
+quantil_seguro = function(x, p) if (all(is.na(x))) NA else as.numeric(quantile(x, probs = p, na.rm = TRUE))
+
+resumo_sinasc = function(df, nivel, codmunres) {
+  data.frame(
+    ANO = 2016,
+    NIVEL = nivel,
+    CODMUNRES = codmunres,
+    TN = nrow(df),
+    TNRC = sum(df$REGCOMPLETO61, na.rm = TRUE),
+    TNRCR = sum(df$REGCOMPLETO21, na.rm = TRUE),
+    TGI_15 = sum(df$F_IDADE == "<15", na.rm = TRUE),
+    TGI_15_19 = sum(df$F_IDADE == "15-19", na.rm = TRUE),
+    TGI_20_24 = sum(df$F_IDADE == "20-24", na.rm = TRUE),
+    TGI_25_29 = sum(df$F_IDADE == "25-29", na.rm = TRUE),
+    TGI_30_34 = sum(df$F_IDADE == "30-34", na.rm = TRUE),
+    TGI_35_39 = sum(df$F_IDADE == "35-39", na.rm = TRUE),
+    TGI_40_44 = sum(df$F_IDADE == "40-44", na.rm = TRUE),
+    TGI_45_49 = sum(df$F_IDADE == "45-49", na.rm = TRUE),
+    TGI_50 = sum(df$F_IDADE == "50+", na.rm = TRUE),
+    TGIF = sum(df$F_IDADE %in% c("15-19","20-24","25-29","30-34","35-39","40-44","45-49"), na.rm = TRUE),
+    IM_P25 = quantil_seguro(df$IDADEMAE, 0.25),
+    IM_P50 = quantil_seguro(df$IDADEMAE, 0.50),
+    IM_P75 = quantil_seguro(df$IDADEMAE, 0.75),
+    IM_MD = media_segura(df$IDADEMAE),
+    IM_DP = dp_segura(df$IDADEMAE),
+    EM_S = sum(df$ESCMAE2010 == "Sem escolaridade", na.rm = TRUE),
+    EM_FI = sum(df$ESCMAE2010 == "Fundamental I (1ª a 4ª série)", na.rm = TRUE),
+    EM_FII = sum(df$ESCMAE2010 == "Fundamental II (5ª a 8ª série)", na.rm = TRUE),
+    EM_M = sum(df$ESCMAE2010 == "Médio (antigo 2º grau)", na.rm = TRUE),
+    EM_SI = sum(df$ESCMAE2010 == "Superior incompleto", na.rm = TRUE),
+    EM_SC = sum(df$ESCMAE2010 == "Superior completo", na.rm = TRUE),
+    TGRC_B = sum(df$RACACORMAE == "Branca", na.rm = TRUE),
+    TGRC_PT = sum(df$RACACORMAE == "Preta", na.rm = TRUE),
+    TGRC_A = sum(df$RACACORMAE == "Amarela", na.rm = TRUE),
+    TGRC_PD = sum(df$RACACORMAE == "Parda", na.rm = TRUE),
+    TGRC_I = sum(df$RACACORMAE == "Indígena", na.rm = TRUE),
+    TGSC = sum(df$ESTCIV == "Sem companheiro", na.rm = TRUE),
+    TGCC = sum(df$ESTCIV == "Com companheiro", na.rm = TRUE),
+    TGPRI = sum(df$PARIDADE == "Nulípara", na.rm = TRUE),
+    TGNPRI = sum(df$PARIDADE == "Multípara", na.rm = TRUE),
+    TGU = sum(df$GRAVIDEZ == "Única", na.rm = TRUE),
+    TGG = sum(df$GRAVIDEZ %in% c("Dupla", "Tripla ou mais"), na.rm = TRUE),
+    TGD_22 = sum(df$GESTACAO == "Menos de 22 semanas", na.rm = TRUE),
+    TGD_22_27 = sum(df$GESTACAO == "22 a 27 semanas", na.rm = TRUE),
+    TGD_28_31 = sum(df$GESTACAO == "28 a 31 semanas", na.rm = TRUE),
+    TGD_32_36 = sum(df$GESTACAO == "32 a 36 semanas", na.rm = TRUE),
+    TGD_37_41 = sum(df$GESTACAO == "37 a 41 semanas", na.rm = TRUE),
+    TGD_42 = sum(df$GESTACAO == "42 semanas e mais", na.rm = TRUE),
+    TGD_PRT = sum(df$GESTACAO %in% c("Menos de 22 semanas", "22 a 27 semanas", "28 a 31 semanas", "32 a 36 semanas"), na.rm = TRUE),
+    TGD_AT = sum(df$GESTACAO == "37 a 41 semanas", na.rm = TRUE),
+    TGD_PST = sum(df$GESTACAO == "42 semanas e mais", na.rm = TRUE),
+    DG_P25 = quantil_seguro(df$SEMAGESTAC, 0.25),
+    DG_P50 = quantil_seguro(df$SEMAGESTAC, 0.50),
+    DG_P75 = quantil_seguro(df$SEMAGESTAC, 0.75),
+    DG_MD = media_segura(df$SEMAGESTAC),
+    DG_DP = dp_segura(df$SEMAGESTAC),
+    TKC_NR = sum(df$KOTELCHUCK == "Não realizou pré-natal", na.rm = TRUE),
+    TKC_ID = sum(df$KOTELCHUCK == "Inadequado", na.rm = TRUE),
+    TKC_IT = sum(df$KOTELCHUCK == "Intermediário", na.rm = TRUE),
+    TKC_AD = sum(df$KOTELCHUCK == "Adequado", na.rm = TRUE),
+    TKC_MAD = sum(df$KOTELCHUCK == "Mais que adequado", na.rm = TRUE),
+    TGPRG_S = sum(df$PEREG == "Sim", na.rm = TRUE),
+    TGPRG_N = sum(df$PEREG == "Não", na.rm = TRUE),
+    TPV = sum(df$PARTO == "Vaginal", na.rm = TRUE),
+    TPC = sum(df$PARTO == "Cesário", na.rm = TRUE),
+    TRAP_C = sum(df$TPAPRESENT == "Cefálico", na.rm = TRUE),
+    TRAP_P = sum(df$TPAPRESENT == "Pélvica ou podálica", na.rm = TRUE),
+    TRAP_T = sum(df$TPAPRESENT == "Transversa", na.rm = TRUE),
+    TGROB_1 = sum(df$TPROBSON == 1, na.rm = TRUE),
+    TGROB_2 = sum(df$TPROBSON == 2, na.rm = TRUE),
+    TGROB_3 = sum(df$TPROBSON == 3, na.rm = TRUE),
+    TGROB_4 = sum(df$TPROBSON == 4, na.rm = TRUE),
+    TGROB_5 = sum(df$TPROBSON == 5, na.rm = TRUE),
+    TGROB_6 = sum(df$TPROBSON == 6, na.rm = TRUE),
+    TGROB_7 = sum(df$TPROBSON == 7, na.rm = TRUE),
+    TGROB_8 = sum(df$TPROBSON == 8, na.rm = TRUE),
+    TGROB_9 = sum(df$TPROBSON == 9, na.rm = TRUE),
+    TGROB_10 = sum(df$TPROBSON == 10, na.rm = TRUE),
+    TNLOC_H = sum(df$LOCNASC == "Hospital", na.rm = TRUE),
+    TNLOC_ES = sum(df$LOCNASC == "Outros estabelecimentos de saúde", na.rm = TRUE),
+    TNLOC_D = sum(df$LOCNASC == "Domicílio", na.rm = TRUE),
+    TNLOC_O = sum(df$LOCNASC == "Outros", na.rm = TRUE),
+    TNLOC_AI = sum(df$AI_BRUTO, na.rm = TRUE),
+    TRS_M = sum(df$SEXO == "Masculino", na.rm = TRUE),
+    TRS_F = sum(df$SEXO == "Feminino", na.rm = TRUE),
+    TRRC_B = sum(df$RACACOR == "Branca", na.rm = TRUE),
+    TRRC_PT = sum(df$RACACOR == "Preta", na.rm = TRUE),
+    TRRC_A = sum(df$RACACOR == "Amarela", na.rm = TRUE),
+    TRRC_PD = sum(df$RACACOR == "Parda", na.rm = TRUE),
+    TRRC_I = sum(df$RACACOR == "Indígena", na.rm = TRUE),
+    TRP_BP = sum(df$F_PESO == "Baixo peso", na.rm = TRUE),
+    TRP_N = sum(df$F_PESO == "Peso normal", na.rm = TRUE),
+    TRP_M = sum(df$F_PESO == "Macrossomia", na.rm = TRUE),
+    PESO_P25 = quantil_seguro(df$PESO, 0.25),
+    PESO_P50 = quantil_seguro(df$PESO, 0.50),
+    PESO_P75 = quantil_seguro(df$PESO, 0.75),
+    PESO_MD = media_segura(df$PESO),
+    PESO_DP = dp_segura(df$PESO),
+    TRPIG_P = sum(df$F_PIG == "PIG", na.rm = TRUE),
+    TRPIG_A = sum(df$F_PIG == "AIG", na.rm = TRUE),
+    TRPIG_G = sum(df$F_PIG == "GIG", na.rm = TRUE),
+    TRAPG5_B = sum(df$F_APGAR5 == "Baixo", na.rm = TRUE),
+    TRAPG5_N = sum(df$F_APGAR5 == "Normal", na.rm = TRUE),
+    APG5_MD = media_segura(df$APGAR5),
+    APG5_DP = dp_segura(df$APGAR5),
+    TRAC = sum(df$IDANOMAL == "Sim", na.rm = TRUE),
+    TRSAC = sum(df$IDANOMAL == "Não", na.rm = TRUE)
+  )
+}
+
+municipios = sort(unique(dados_sinasc_2$CODMUNRES))
+
+SINASC_MUNICIPIO = do.call(rbind, lapply(municipios, function(m) {
+  resumo_sinasc(dados_sinasc_2[dados_sinasc_2$CODMUNRES == m, ], nivel = "MUNICIPIO", codmunres = m)
+}))
+
+linha_estado = resumo_sinasc(dados_sinasc_2, nivel = "UF", codmunres = 27)
+
+SINASC_UF = rbind(SINASC_MUNICIPIO, linha_estado)
+
+dim(SINASC_UF)   # deve ter (nº de municípios do Alagoas + 1) linhas e 103 colunas
+str(SINASC_UF)
+
+
+## Ficou com alguns dados estranhos ##
+
+
 # Ao terminar a Tarefa 9 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 9" e envie para o repositório Projeto_BDEM_2016
 
 
 # Tarefa 10. Exportar o banco de dados com o nome SINASC_UF.csv (Exemplo: SINASC_RJ.csv)
 # Ao terminar a Tarefa 10 commit com o comentário "dados SINASC_UF 2016 e script - SIM - tarefas 1 a 10"  e envie para o repositório Projeto_BDEM_2016
 
+write.csv(SINASC_UF, "SINASC_AL.csv", row.names = FALSE)
 
 
 ####################################
