@@ -718,6 +718,16 @@ table(dados_sidra_1$CODUF)
 # Tarefa 3. Selecionar em dados_sidra_ 1 a dados_sidra_4 a UF de responsabilidade do aluno 
 # e chamar os bancos de dados, respectivamente por sidra_1, sidra_2, sidra_3 e sidra_4
 
+# Aluno responsável pela UF 27 (Alagoas - AL)
+sidra_1 = dados_sidra_1[dados_sidra_1$CODUF == "27", ]
+sidra_2 = dados_sidra_2[dados_sidra_2$CODUF == "27", ]
+sidra_3 = dados_sidra_3[dados_sidra_3$CODMUNRES == 27, ]   # só tem linhas de UF, CODMUNRES já é o código da UF
+sidra_4 = dados_sidra_4[dados_sidra_4$CODUF == "27", ]
+
+nrow(sidra_1)   # 103: a UF + 102 municípios
+nrow(sidra_2)   # 103
+nrow(sidra_3)   # 19 faixas etárias
+nrow(sidra_4)   # 102 municípios x 19 faixas = 1938
 
 # Ao terminar a Tarefa 3 commit com a mensagem "script BDEM - SIDRA - tarefas 1 a 3" e envie para o repositório Projeto_BDEM_2016
 
