@@ -707,6 +707,10 @@ table(dados_sidra_4$F_IDADE)
 
 # Tarefa 2. Criar uma nova variável de nome CODUF com os códigos da UF nos bancos dados_sidra_1, dados_sidra_2, dados_sidra_4
 
+dados_sidra_1$CODUF = substr(as.character(dados_sidra_1$CODMUNRES), 1, 2)
+dados_sidra_2$CODUF = substr(as.character(dados_sidra_2$CODMUNRES), 1, 2)
+dados_sidra_4$CODUF = substr(as.character(dados_sidra_4$CODMUNRES), 1, 2)
+table(dados_sidra_1$CODUF)
 
 # Ao terminar a Tarefa 2 commit com a mensagem "script BDEM - SIDRA - tarefas 1 a 2" e envie para o repositório Projeto_BDEM_2016
 
