@@ -734,6 +734,51 @@ nrow(sidra_4)   # 102 municípios x 19 faixas = 1938
 
 # Tarefa 4: Criar um banco de dados, de nome SIDRA_UF.csv (Exemplo: SIDRA_RJ.csv), contendo as variáveis listadas no arquivo “Variáveis - Projeto - Tarefa 4 - SIDRA.pdf”
 
+# Faixas etárias agrupadas em <15, 15 a 49 e 50+
+# sidra_3 (linha da UF) e sidra_4 (municípios) têm as mesmas faixas, então são empilhados
+faixas = rbind(sidra_3[, c("CODMUNRES", "F_IDADE", "POP", "POPF")],
+               sidra_4[, c("CODMUNRES", "F_IDADE", "POP", "POPF")])
+
+faixas$GRUPO = ifelse(faixas$F_IDADE %in% c("0 a 4 anos", "5 a 9 anos", "10 a 14 anos"), "15",
+               ifelse(faixas$F_IDADE %in% c("15 a 19 anos", "20 a 24 anos", "25 a 29 anos", "30 a 34 anos",
+                                            "35 a 39 anos", "40 a 44 anos", "45 a 49 anos"), "15_49", "50"))
+
+pop = as.data.frame.matrix(tapply(faixas$POP, list(faixas$CODMUNRES, faixas$GRUPO), sum))
+names(pop) = c("POPRC_15", "POPRC_15_49", "POPRC_50")
+pop$CODMUNRES = as.numeric(rownames(pop))
+
+popf = as.data.frame.matrix(tapply(faixas$POPF, list(faixas$CODMUNRES, faixas$GRUPO), sum))
+names(popf) = c("POPRC_F_15", "POPRC_F_15_49", "POPRC_F_50")
+popf$CODMUNRES = as.numeric(rownames(popf))
+
+# Juntar tudo pela chave CODMUNRES (7 dígitos neste ponto)
+SIDRA_UF = merge(sidra_1[, c("CODMUNRES", "POPRE_T")],
+                 sidra_2[, c("CODMUNRES", "POPRC_T", "POPRC_M", "POPRC_F")], by = "CODMUNRES", all.x = TRUE)
+SIDRA_UF = merge(SIDRA_UF, pop, by = "CODMUNRES", all.x = TRUE)
+SIDRA_UF = merge(SIDRA_UF, popf, by = "CODMUNRES", all.x = TRUE)
+
+SIDRA_UF$ANO = 2016
+SIDRA_UF$NIVEL = ifelse(SIDRA_UF$CODMUNRES == 27, "UF", "MUNICIPIO")
+
+# Os códigos de município do SIDRA têm 7 dígitos (o último é dígito verificador).
+# Para ficar igual a SIM_AL.csv e SINASC_AL.csv (6 dígitos), retira-se o último dígito
+SIDRA_UF$CODMUNRES = ifelse(SIDRA_UF$NIVEL == "UF", "27", substr(as.character(SIDRA_UF$CODMUNRES), 1, 6))
+
+# linha da UF primeiro e ordem das colunas do PDF
+SIDRA_UF = SIDRA_UF[order(SIDRA_UF$NIVEL != "UF", SIDRA_UF$CODMUNRES), ]
+SIDRA_UF = SIDRA_UF[, c("ANO", "NIVEL", "CODMUNRES", "POPRE_T", "POPRC_T", "POPRC_M", "POPRC_F",
+                        "POPRC_15", "POPRC_15_49", "POPRC_50", "POPRC_F_15", "POPRC_F_15_49", "POPRC_F_50")]
+rownames(SIDRA_UF) = NULL
+
+# Conferência: na linha da UF, a soma dos municípios deve bater com o total
+colSums(SIDRA_UF[SIDRA_UF$NIVEL == "MUNICIPIO", 4:13]) - SIDRA_UF[SIDRA_UF$NIVEL == "UF", 4:13]
+# faixas etárias devem somar o total
+all(SIDRA_UF$POPRC_15 + SIDRA_UF$POPRC_15_49 + SIDRA_UF$POPRC_50 == SIDRA_UF$POPRC_T)
+
+dim(SIDRA_UF)
+str(SIDRA_UF)
+head(SIDRA_UF)
+
 # Ao terminar a Tarefa 4 commit com a mensagem "script BDEM - SIDRA - tarefas 1 a 4" e envie para o repositório Projeto_BDEM_2016
 
 
