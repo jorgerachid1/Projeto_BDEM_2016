@@ -802,6 +802,17 @@ write.csv(SIDRA_UF, "SIDRA_AL.csv", row.names = FALSE)
 
 # Verificar se a leitura de todos os bancos foi feita corretamente e a estrutura dos dados
 
+# códigos IBGE e IDHM dos municípios estão em UTF-8 com BOM; IDHM das UFs está em latin1
+codigos_IBGE_2010 = read.csv("códigos dos municípios - 2010.csv", sep = ";", fileEncoding = "UTF-8-BOM")
+dados_atlas_1 = read.csv("IDHM - 2010 (CENSO) e 2016 (PNAD) - total e por sexo - UF - Atlas Brasil.csv",
+                         sep = ";", fileEncoding = "latin1")
+dados_atlas_2 = read.csv("IDHM - 2010 - municípios - Atlas Brasil.csv", sep = ";", fileEncoding = "UTF-8-BOM")
+
+dim(codigos_IBGE_2010); str(codigos_IBGE_2010)   # 5565 municípios
+dim(dados_atlas_1); str(dados_atlas_1)           # 28 linhas: Brasil + 27 UFs
+dim(dados_atlas_2); str(dados_atlas_2)           # 5565 municípios, nome no formato "Município (UF)"
+head(dados_atlas_2)
+
 # Ao terminar a Tarefa 1 commit com a mensagem "script BDEM - ATLAS - tarefa 1" e envie para o repositório Projeto_BDEM_2016
 
 
