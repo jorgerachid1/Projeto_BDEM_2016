@@ -839,31 +839,67 @@ UF_codigo = data.frame(
 )
 
 # Retirar de dados_atlas_1 a linha do Brasil e adicionar (com merge by UF) as colunas de UF_codigo
+dados_atlas_1 = dados_atlas_1[dados_atlas_1$UF != "Brasil", ]
+dados_atlas_1 = merge(dados_atlas_1, UF_codigo, by = "UF")
+nrow(dados_atlas_1)   # 27 UFs
 
 # Criar o banco linha_estado somente com as linhas da UF e com as seguintes colunas:
 # ANO=2016, NIVEL=UF, CODMUNRES, IDHM_A, IDHM_CA, IDHM_CA_M e IDHM_CA_F 
+# IDHM_A = IDHM de 2016 (PNAD); IDHM_CA = IDHM do Censo 2010
+linha_estado = data.frame(ANO = 2016, NIVEL = "UF", CODMUNRES = as.character(dados_atlas_1$CODUF),
+                          IDHM_A = dados_atlas_1$IDHM_2016, IDHM_CA = dados_atlas_1$IDHM_2010,
+                          IDHM_CA_M = dados_atlas_1$IDHM_2010_M, IDHM_CA_F = dados_atlas_1$IDHM_2010_F)
 
 # Selecionar de linha_estado a UF da responsabilidade do aluno por CODMUNRES
+# Aluno responsável pela UF 27 (Alagoas - AL)
+linha_estado = linha_estado[linha_estado$CODMUNRES == "27", ]
+linha_estado
 
 # Criar em dados_atlas_2 a coluna com UF
+# a sigla da UF está entre parênteses no fim do nome: "Maceió (AL)"
+dados_atlas_2$UF = substr(dados_atlas_2$município, nchar(dados_atlas_2$município) - 2, nchar(dados_atlas_2$município) - 1)
+table(dados_atlas_2$UF)
 
 # Retirar (UF) da variável município
+dados_atlas_2$município = substr(dados_atlas_2$município, 1, nchar(dados_atlas_2$município) - 5)
+head(dados_atlas_2)
 
 # Acrescentar em codigos_IBGE_2010 a variável CODUF baseado nos dois primeiros dígitos de CODMUNRES
+codigos_IBGE_2010$CODUF = as.numeric(substr(codigos_IBGE_2010$CODMUNRES, 1, 2))
 
 # Acrescentar a codigos_IBGE_2010 as variáveis de UF_codigo (merge by CODUF)
+codigos_IBGE_2010 = merge(codigos_IBGE_2010, UF_codigo, by = "CODUF")
+head(codigos_IBGE_2010)
 
 # Associar dados_atlas_2 a codigos_IBGE_2010 e nomear o novo arquivo por atlas_municipio
 # Neste caso o merge será by.x = c("município","UF") e by.y = c("município","SIGLA")
+atlas_municipio = merge(dados_atlas_2, codigos_IBGE_2010, by.x = c("município", "UF"), by.y = c("município", "SIGLA"))
+names(atlas_municipio)
 
 # Remover de atlas_municipio a coluna UF.y criada no merge
+atlas_municipio$UF.y = NULL
 
 # Selecionar somente a UF de responsabilidade do aluno através dos dois primeiros dógitos de CODMUNRES
+atlas_municipio = atlas_municipio[substr(atlas_municipio$CODMUNRES, 1, 2) == "27", ]
+# conferência: todos os 102 municípios de AL encontraram o código IBGE no merge
+nrow(atlas_municipio)
+sum(dados_atlas_2$UF == "AL")
 
 # Criar banco ATLAS_MUNICIPIO com as linhas dos municípios e com as seguintes variáveis:
 # ANO=2016, NIVEL=MUNICIPIO, CODMUNRES, IDHM_A=NA, IDHM_CA, IDHM_CA_M=NA, IDHM_CA_F=NA
+# CODMUNRES com 6 dígitos (sem o dígito verificador), igual a SIM_AL.csv, SINASC_AL.csv e SIDRA_AL.csv
+ATLAS_MUNICIPIO = data.frame(ANO = 2016, NIVEL = "MUNICIPIO", CODMUNRES = substr(atlas_municipio$CODMUNRES, 1, 6),
+                             IDHM_A = NA, IDHM_CA = atlas_municipio$IDHM_2010, IDHM_CA_M = NA, IDHM_CA_F = NA)
+ATLAS_MUNICIPIO = ATLAS_MUNICIPIO[order(ATLAS_MUNICIPIO$CODMUNRES), ]
 
 # Criar banco final ATLAS_UF "juntando" os bancos linha_estado e ATLAS_MUNICIPIO
+# linha da UF primeiro
+ATLAS_UF = rbind(linha_estado, ATLAS_MUNICIPIO)
+rownames(ATLAS_UF) = NULL
+
+dim(ATLAS_UF)
+str(ATLAS_UF)
+head(ATLAS_UF)
 
 
 # Ao terminar a Tarefa 2 commit com a mensagem "script BDEM - ATLAS - tarefas 1 a 2" e envie para o repositório Projeto_BDEM_2016
