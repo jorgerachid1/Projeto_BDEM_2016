@@ -908,6 +908,8 @@ head(ATLAS_UF)
 # Tarefa 3. Exportar o banco de dados com o nome ATLAS_UF.csv (Exemplo: ATLAS_RJ.csv)
 # Ao terminar a Tarefa 3 commit com o comentário "dados ATLAS_UF 2016 e script - ATLAS - tarefas 1 a 3"  e envie para o repositório Projeto_BDEM_2016
 
+write.csv(ATLAS_UF, "ATLAS_AL.csv", row.names = FALSE)
+
 
 
 ####################################
