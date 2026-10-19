@@ -955,6 +955,23 @@ colSums(is.na(dados_sinisa_1))    # municípios sem informação de água/esgoto
 
 # Tarefa 3. Criar um banco de dados, de nome SINISA_UF.csv (Exemplo: SINISA_RJ.csv), contendo as variáveis listadas no arquivo “Variáveis - Projeto - Tarefa 3 - SINISA.pdf”
 
+# Variáveis do PDF: ANO, NIVEL, CODMUNRES, POPR_RA, POPR_RE
+SINISA_MUNICIPIO = data.frame(ANO = 2016, NIVEL = "MUNICIPIO", CODMUNRES = as.character(dados_sinisa_1$CODMUNRES),
+                              POPR_RA = dados_sinisa_1$POPR_RA, POPR_RE = dados_sinisa_1$POPR_RE)
+SINISA_MUNICIPIO = SINISA_MUNICIPIO[order(SINISA_MUNICIPIO$CODMUNRES), ]
+
+# O arquivo não tem a linha da UF: soma dos municípios desconsiderando os NAs
+linha_estado = data.frame(ANO = 2016, NIVEL = "UF", CODMUNRES = "27",
+                          POPR_RA = sum(SINISA_MUNICIPIO$POPR_RA, na.rm = TRUE),
+                          POPR_RE = sum(SINISA_MUNICIPIO$POPR_RE, na.rm = TRUE))
+
+# linha da UF primeiro; CODMUNRES com 6 dígitos, igual a SIM_AL, SINASC_AL, SIDRA_AL e ATLAS_AL
+SINISA_UF = rbind(linha_estado, SINISA_MUNICIPIO)
+rownames(SINISA_UF) = NULL
+
+dim(SINISA_UF)   # 103 linhas (UF + 102 municípios) e 5 colunas
+str(SINISA_UF)
+head(SINISA_UF)
 
 # Ao terminar a Tarefa 3 commit com a mensagem "script BDEM - SINISA - tarefas 1 a 3" e envie para o repositório Projeto_BDEM_2016
 
