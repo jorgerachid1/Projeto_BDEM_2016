@@ -926,21 +926,37 @@ write.csv(ATLAS_UF, "ATLAS_AL.csv", row.names = FALSE)
 # Verificar se a leitura de todos os bancos foi feita corretamente e a estrutura dos dados
 # Remover a pontuação de milhar e converter para formato numérico
 
+# arquivo em latin1; populações lidas como texto para não perder o ponto de milhar
+dados_sinisa = read.csv("agua e esgoto - município - 2016.csv", sep = ";", fileEncoding = "latin1",
+                        colClasses = c(POPR_RA = "character", POPR_RE = "character"))
+dim(dados_sinisa)   # 5570 municípios e 6 colunas
+str(dados_sinisa)
+head(dados_sinisa)
+
+# "4.858" -> 4858; célula vazia vira NA
+dados_sinisa$POPR_RA = as.numeric(gsub(".", "", dados_sinisa$POPR_RA, fixed = TRUE))
+dados_sinisa$POPR_RE = as.numeric(gsub(".", "", dados_sinisa$POPR_RE, fixed = TRUE))
+str(dados_sinisa)
+summary(dados_sinisa[, c("POPR_RA", "POPR_RE")])
+
 # Ao terminar a Tarefa 1 commit com a mensagem "script BDEM - SINISA - tarefa 1" e envie para o repositório Projeto_BDEM_2016
 
 
 # Tarefa 2. Reduzir dados_sinisa apenas para o estado que o aluno irá trabalhar (utilizar os dois primeiros dígitos de CODMUNRES), nomeando este novo banco de dados como dados_sinisa_1
+
 
 # Ao terminar a Tarefa 2 commit com a mensagem "script BDEM - SINISA - tarefas 1 a 2" e envie para o repositório Projeto_BDEM_2016
 
 
 # Tarefa 3. Criar um banco de dados, de nome SINISA_UF.csv (Exemplo: SINISA_RJ.csv), contendo as variáveis listadas no arquivo “Variáveis - Projeto - Tarefa 3 - SINISA.pdf”
 
+
 # Ao terminar a Tarefa 3 commit com a mensagem "script BDEM - SINISA - tarefas 1 a 3" e envie para o repositório Projeto_BDEM_2016
 
 
 # Tarefa 4. Exportar o banco de dados com o nome SINISA_UF.csv (Exemplo: SINISA_RJ.csv)
 # Ao terminar a Tarefa 4 commit com o comentário "dados SINISA_UF 2016 e script - SINISA - tarefas 1 a 4"  e enviar para o repositório Projeto_BDEM_2016
+
 
 
 
