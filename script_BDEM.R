@@ -944,6 +944,11 @@ summary(dados_sinisa[, c("POPR_RA", "POPR_RE")])
 
 # Tarefa 2. Reduzir dados_sinisa apenas para o estado que o aluno irá trabalhar (utilizar os dois primeiros dígitos de CODMUNRES), nomeando este novo banco de dados como dados_sinisa_1
 
+# Aluno responsável pela UF 27 (Alagoas - AL)
+dados_sinisa_1 = dados_sinisa[substr(as.character(dados_sinisa$CODMUNRES), 1, 2) == "27", ]
+nrow(dados_sinisa_1)              # 102 municípios (não há linha da UF no arquivo)
+table(dados_sinisa_1$Estado)
+colSums(is.na(dados_sinisa_1))    # municípios sem informação de água/esgoto
 
 # Ao terminar a Tarefa 2 commit com a mensagem "script BDEM - SINISA - tarefas 1 a 2" e envie para o repositório Projeto_BDEM_2016
 
