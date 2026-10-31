@@ -992,10 +992,28 @@ write.csv(SINISA_UF, "SINISA_AL.csv", row.names = FALSE)
 
 # Tarefa 1: Agregar os arquivos SIDRA_UF, ATLAS_UF, SINASC_UF, SIM_UF, SINISA_UF no banco BDEM_UF (Exemplo: BDEM_RJ)
 # Leitura dos 5 bancos de dados expeortados das etapas anteriores
+SIDRA_UF = read.csv("SIDRA_AL.csv", header = TRUE)
+ATLAS_UF = read.csv("ATLAS_AL.csv", header = TRUE)
+SINASC_UF = read.csv("SINASC_AL.csv", header = TRUE)
+SIM_UF = read.csv("SIM_AL.csv", header = TRUE)
+SINISA_UF = read.csv("SINISA_AL.csv", header = TRUE)
 
 # Agregação dos bancos
 # Lembre-se que SIDRA e ATLAS tem CODMUNRES com 7 dígitos e SINASC, SIM e SINISA com 6 dígitos
 # Além disso dentro do merge all = TRUE garante a manutenção de qualquer município presente em um dos bancos envolvidos no merge
+SIDRA_UF$CODMUNRES = substr(as.character(SIDRA_UF$CODMUNRES), 1, 6)
+ATLAS_UF$CODMUNRES = substr(as.character(ATLAS_UF$CODMUNRES), 1, 6)
+
+BDEM_UF = merge(SIDRA_UF, ATLAS_UF, by = c("ANO","NIVEL","CODMUNRES"), all = TRUE)
+BDEM_UF = merge(BDEM_UF, SINASC_UF, by = c("ANO","NIVEL","CODMUNRES"), all = TRUE)
+BDEM_UF = merge(BDEM_UF, SIM_UF, by = c("ANO","NIVEL","CODMUNRES"), all = TRUE)
+BDEM_UF = merge(BDEM_UF, SINISA_UF, by = c("ANO","NIVEL","CODMUNRES"), all = TRUE)
+
+BDEM_UF = BDEM_UF[order(BDEM_UF$CODMUNRES), ]
+BDEM_UF = rbind(
+  BDEM_UF[BDEM_UF$NIVEL == "UF", ],
+  BDEM_UF[BDEM_UF$NIVEL == "MUNICIPIO", ]
+)
 
 
 # Ao terminar a Tarefa 1 commit com a mensagem "script BDEM - BDEM - tarefa 1" e envie para o repositório Projeto_BDEM_2016
@@ -1012,11 +1030,23 @@ write.csv(SINISA_UF, "SINISA_AL.csv", row.names = FALSE)
 # TMN_T: Taxa de mortalidade neonatal tardia
 # TMI: Taxa de mortalidade infantil
 
+BDEM_UF$TGF    = round((BDEM_UF$TN / BDEM_UF$POPRC_F_15_49) * 1000, 2)
+BDEM_UF$TMG    = round((BDEM_UF$TO / BDEM_UF$POPRE_T) * 1000, 2)
+BDEM_UF$RMM    = round((BDEM_UF$TO_MT / BDEM_UF$TN) * 100000, 2)
+BDEM_UF$TMM    = round((BDEM_UF$TO_MT / BDEM_UF$POPRC_F_15_49) * 100000, 2)
+BDEM_UF$TMM_P  = round((BDEM_UF$TO_MT_P / BDEM_UF$POPRC_F_15_49) * 100000, 2)
+BDEM_UF$TMN    = round(((BDEM_UF$TO_NT_P + BDEM_UF$TO_NT_T) / BDEM_UF$TN) * 1000, 2)
+BDEM_UF$TMN_P  = round((BDEM_UF$TO_NT_P / BDEM_UF$TN) * 1000, 2)
+BDEM_UF$TMN_T  = round((BDEM_UF$TO_NT_T / BDEM_UF$TN) * 1000, 2)
+BDEM_UF$TMI    = round(((BDEM_UF$TO_NT + BDEM_UF$TO_PNT) / BDEM_UF$TN) * 1000, 2)
+
 # Conferir o banco BDEM_UF após inserção dos indicadores
 
 # Ao terminar a Tarefa 2 commit com a mensagem "script BDEM - BDEM - tarefas 1 a 2" e envie para o repositório Projeto_BDEM_2016
 
 
 # Tarefa 3: Exportar o banco de dados com o nome BDEM_UF.csv (Exemplo: BDEM_RJ.csv)
+write.csv(BDEM_UF, "BDEM_AL.csv", row.names = FALSE)
+
 # Ao terminar a Tarefa 3 commit com o comentário "dados BDEM_UF 2016 e script - BDEM - tarefas 1 a 3"  e enviar para o repositório Projeto_BDEM_2016
  
